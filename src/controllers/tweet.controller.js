@@ -7,16 +7,28 @@ import {asyncHandler} from "../utils/asyncHandler.js"
 
 const createTweet = asyncHandler(async (req, res) => {
     //TODO: create tweet
-    const tweet = req.body
+    const {content} = req.body
+    const user = req.user
 
-    if(!tweet.trim()){
+    if(!content){
         throw new ApiError(401, "Content required for tweet")
     }
+
+    if(!user){
+        throw new ApiError(400, "Unauthorized request to create tweet")
+    }
+
+    const tweet = await Tweet.create({
+        content,
+        owner: user?._id
+    })
+
+    
 
     return res
     .status(200)
     .json(
-        new ApiResponse(200, tweet.trim(), "Tweet created successfully")
+        new ApiResponse(200, tweet, "Tweet created successfully")
     )
 })
 
@@ -46,17 +58,10 @@ const getUserTweets = asyncHandler(async (req, res) => {
                     }
                 ]
             }
-        },
-        {
-            $addFields: {
-                owner:{
-                    $first: "owner"
-                }
-            }
         }
     ])
 
-    if(tweets?.length){
+    if(!tweets?.length){
         throw new ApiError(400, "Tweet does not exist")
     }
 
