@@ -67,7 +67,9 @@ const getUserTweets = asyncHandler(async (req, res) => {
 
     return res
     .status(200)
-    .json(200, tweets[0], "User Tweets fetched successfully")
+    .json(
+        new ApiResponse(200, tweets, "User Tweets fetched successfully")
+    )
 })
 
 const updateTweet = asyncHandler(async (req, res) => {
