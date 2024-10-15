@@ -8,17 +8,103 @@ import {asyncHandler} from "../utils/asyncHandler.js"
 
 const toggleSubscription = asyncHandler(async (req, res) => {
     const {channelId} = req.params
-    // TODO: toggle subscription
+    const user = req.user
+    // TODO: toggle subscription    
+    // get user id and check if user exist in channel
+    const channel = await User.findById(channelId)
+
+    if(!user){
+        throw new ApiError(400, "User not found")
+    }
+
+    if(!channel){
+        throw new ApiError(400, "Channel not found")
+    }
+
+    const subsribers = await Subscription.find(
+        {
+            subsriber: user._id,
+            channel: channel._id
+        }
+    )
+
+    let isSubscribed = false;
+
+    if(subsribers.length >0){
+        isSubscribed = true;
+        await Subscription.deleteOne({
+            subsriber: user._id,
+            channel: channel._id
+        })
+    } else{
+        isSubscribed = false;
+        await Subscription.create({
+            subsriber: user._id,
+            channel: channel._id
+        })
+    }
+
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(200, {}, `Channel ${isSubscribed ? "unsubscribed" : "subscribed"} successfully`)
+    )
+
 })
 
 // controller to return subscriber list of a channel
 const getUserChannelSubscribers = asyncHandler(async (req, res) => {
     const {channelId} = req.params
+
+    const channel = await User.findById(channelId)
+
+    if(!channelId){
+        throw new ApiError(400, "Channel ID not found")
+    }
+    if(!channel){
+        throw new ApiError(400, "Channel not found")
+    }
+
+    const subsribers = await Subscription.find(
+        {
+            channel: channel._id
+        }
+    ).select("-password -refreshToken")
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(200, subsribers, "Subscriber list fetched successfully")
+    )
+
 })
 
 // controller to return channel list to which user has subscribed
 const getSubscribedChannels = asyncHandler(async (req, res) => {
     const { subscriberId } = req.params
+
+    const subscriber = await User.findById(subscriberId)
+
+    if(!subscriberId){
+        throw new ApiError(400, "Subscriber ID not found")
+    }
+    if(!subscriber){
+        throw new ApiError(400, "Subscriber not found")
+    }
+
+    const subscribedChannels = await Subscription.find(
+        {
+            subsriber: subscriber._id
+        }
+    ).select("-password -refreshToken")
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(200, subscribedChannels, "Subscribed Channels list fetched successfully")
+    )
+
 })
 
 export {
