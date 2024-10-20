@@ -9,7 +9,7 @@ import {asyncHandler} from "../utils/asyncHandler.js"
 const toggleSubscription = asyncHandler(async (req, res) => {
     const {channelId} = req.params
     const user = req.user
-    // TODO: toggle subscription    
+    // TODO: toggle subscription 
     // get user id and check if user exist in channel
     const channel = await User.findById(channelId)
 
@@ -66,11 +66,37 @@ const getUserChannelSubscribers = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Channel not found")
     }
 
-    const subsribers = await Subscription.find(
+    const subsribers = await Subscription.aggregate([
         {
-            channel: channel._id
+            $match:{
+                channel: channel._id
+            }
+        },
+        {
+            $lookup:{
+                from: "users",
+                localField: "subsriber",
+                foreignField: "_id",
+                as: "subscriber",
+                pipeline: [
+                    {
+                        $project: {
+                            fullName: 1,
+                            username: 1,
+                            avatar: 1
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            $addFields:{
+                subscriber: {
+                    $first: "$subscriber"
+                }
+            }
         }
-    ).select("-password -refreshToken")
+    ])
 
     return res
     .status(200)
@@ -93,11 +119,38 @@ const getSubscribedChannels = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Subscriber not found")
     }
 
-    const subscribedChannels = await Subscription.find(
+
+    const subscribedChannels = await Subscription.aggregate([
         {
-            subsriber: subscriber._id
+            $match:{
+                subsriber: subscriber._id
+            }
+        },
+        {
+            $lookup:{
+                from: "users",
+                localField: "channel",
+                foreignField: "_id",
+                as: "channel",
+                pipeline: [
+                    {
+                        $project: {
+                            fullName: 1,
+                            username: 1,
+                            avatar: 1
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            $addFields:{
+                channel: {
+                    $first: "$channel"
+                }
+            }
         }
-    ).select("-password -refreshToken")
+    ])
 
     return res
     .status(200)
