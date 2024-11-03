@@ -8,8 +8,47 @@ import {uploadOnCloudinary} from "../utils/cloudinary.js"
 
 
 const getAllVideos = asyncHandler(async (req, res) => {
-    const { page = 1, limit = 10, query, sortBy, sortType, userId } = req.query
-    //TODO: get all videos based on query, sort, pagination
+    const { page = 1, limit = 10, query, sortBy, sortType } = req.query
+    const user = req.user
+    if(!user){
+        throw new ApiError(400, "User does not exist")
+    }
+    const userId = user._id;
+    
+    try {
+        const pageNum = parseInt(page, 10);
+        const limitNum = parseInt(limit, 10);
+        const options = {
+            skip: (pageNum - 1) * limitNum,
+            limit: limitNum,
+        };
+        const sortOrder = sortType === 'asc' ? 1 : -1;
+
+        const videos = await Video.find({ owner: userId, ...query })
+            .sort({ [sortBy]: sortOrder })
+            .skip(options.skip)
+            .limit(options.limit)
+            .populate('owner');
+
+        const totalCount = await Video.countDocuments({ owner: userId, ...query });
+
+        const userVideos =  {
+            videos,
+            totalCount,
+            totalPages: Math.ceil(totalCount / limitNum),
+            currentPage: pageNum,
+        };
+
+        return res
+        .status(200)
+        .json(
+            new ApiResponse(200, userVideos, "User's all videos fetched successfully")
+        )
+
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
 })
 
 const publishAVideo = asyncHandler(async (req, res) => {
@@ -58,7 +97,17 @@ const getVideoById = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Video ID not found")
     }
 
-    const video = await Video.findById(videoId)
+    const video = await Video.findByIdAndUpdate(
+        videoId,
+        {
+            $inc: {
+                views: 1
+            }
+        },
+        {
+            new: true
+        }
+    )
 
     return res
     .status(200)
@@ -135,7 +184,7 @@ const togglePublishStatus = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Video ID is missing")
     }
 
-    const video = await Video.findById(video)
+    const video = await Video.findById(videoId)
     const currentPublishStatus = video?.isPublished
 
     const updatedVideo = await Video.findByIdAndUpdate(
