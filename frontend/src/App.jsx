@@ -1,6 +1,5 @@
 import React from 'react'
-import Homepage from './Components/Homepage';
-import VideoPlayerPage from './Components/VideoPlayerPage';
+import PageLayout from './Components/PageLayout'
 import Navbar from './Components/Navbar';
 
 function App() {
@@ -11,8 +10,7 @@ function App() {
         <div className="fixed top-0 left-0 right-0 h-16 z-10">
           <Navbar />
         </div>
-        <VideoPlayerPage />
-        {/* <Homepage /> */}
+        <PageLayout />
       </div>
     </>
   );

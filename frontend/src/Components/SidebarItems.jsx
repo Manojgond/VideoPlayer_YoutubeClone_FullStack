@@ -10,25 +10,31 @@ export const SidebarItems = [
     {
         title: "Home",
         icon: <HomeOutlinedIcon />,
+        link: "/"
     },
     {
         title: "Subscriptions",
         icon: <SubscriptionsOutlinedIcon />,
+        link: "/subscription"
     },
     {
         title: "History",
         icon: <HistoryIcon />,
+        link: "/History"
     },
     {
         title: "Playlists",
         icon: <PlaylistPlayIcon />,
+        link: "/Playlist"
     },
     {
         title: "Your videos",
         icon: <SmartDisplayOutlinedIcon />,
+        link: "/YourVideos"
     },
     {
         title: "Liked videos",
         icon: <ThumbUpOutlinedIcon />,
+        link: "/Liked"
     },
 ]

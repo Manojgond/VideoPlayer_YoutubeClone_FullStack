@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import MenuIcon from '@mui/icons-material/Menu';
 import { useSelector } from 'react-redux'
 import { SidebarItems } from './SidebarItems'
+import { NavLink } from 'react-router-dom'
 
 
 function Sidebar() {
@@ -16,16 +17,19 @@ function Sidebar() {
                     {SidebarItems.map((sidebarItem, index) => {
                         return (
                             <li key={index}>
-                                <div className="flex hover:bg-[#212121] p-3 rounded w-full">
-                                    <div className="w-1/4 grid items-center">
-                                        {sidebarItem.icon}
-                                    </div>
-                                    <div className={`w-3/4`}>
-                                        <a href="#">
+                                <NavLink
+                                    to={sidebarItem.link}
+                                    className={({ isActive }) => `${isActive ? "text-lg font-bold" : "font-normal"}`}
+                                >
+                                    <div className="flex hover:bg-[#212121] p-3 rounded w-full">
+                                        <div className="w-1/4 grid items-center">
+                                            {sidebarItem.icon}
+                                        </div>
+                                        <div className={`w-3/4`}>
                                             {sidebarItem.title}
-                                        </a>
+                                        </div>
                                     </div>
-                                </div>
+                                </NavLink>
                             </li>
                         )
                     })}
@@ -40,6 +44,7 @@ function Sidebar() {
                     {SidebarItems.map((sidebarItem, index) => {
                         return (
                             <li key={index}>
+
                                 <div className="grid hover:bg-[#212121] p-3 rounded w-full">
                                     {sidebarItem.icon}
                                 </div>
