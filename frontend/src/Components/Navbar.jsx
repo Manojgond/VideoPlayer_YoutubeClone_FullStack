@@ -5,14 +5,17 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { useDispatch } from 'react-redux'
 import { toggleMenuHide } from "../features/youtube/youtubeSlice";
 import logo from "../assets/Youtube_logo_NoBG.png"
+import { useLocation } from 'react-router-dom';
 
 function Navbar() {
   const dispatch = useDispatch()
+  const location = useLocation();
+  const menuIconToHide = location.pathname === '/VideoPlayer';
 
   return (
     <div className='w-full flex items-center pl-5 justify-between text-white h-full bg-[#181818]'>
       <div className='h-full flex items-center'>
-        <button className="p-3" onClick={() => dispatch(toggleMenuHide())}>
+        <button className={`p-3 ${menuIconToHide ? "hidden" : "block" }`} onClick={() => dispatch(toggleMenuHide())}>
           <MenuIcon fontSize="medium" />
         </button>
         <img src={logo} alt="Youtube logo" className='h-1/2' />

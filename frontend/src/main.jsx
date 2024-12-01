@@ -5,7 +5,7 @@ import { store } from './app/store.js'
 import { Provider } from 'react-redux'
 import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from 'react-router-dom'
 import PageLayout from './Components/PageLayout.jsx'
-import {Homepage, VideoPlayerPage, HistoryPage } from './Components/index'
+import {Homepage, VideoPlayerPage, HistoryPage, PublishVideo, LoginPage, RegisterPage } from './Components/index'
 
 const router = createBrowserRouter(
     createRoutesFromElements(
@@ -13,6 +13,9 @@ const router = createBrowserRouter(
             <Route index element={<Homepage />} />
             <Route path='VideoPlayer' element={<VideoPlayerPage />} />
             <Route path='History' element={<HistoryPage />} />
+            <Route path='Publish' element={<PublishVideo />} />
+            <Route path='register' element={<RegisterPage />} />
+            <Route path='login' element={<LoginPage />} />
         </Route>
     )
 )

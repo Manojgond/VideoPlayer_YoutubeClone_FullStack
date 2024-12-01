@@ -7,7 +7,7 @@ import PlaynextVideos from './PlaynextVideos';
 
 function VideoPlayerPage() {
     return (
-        <div className='w-full h-[2000px] mt-16 px-20 grid grid-cols-[2fr_1fr] gap-5'>
+        <div className='w-full h-[2000px] px-20 grid grid-cols-[2fr_1fr] gap-5'>
             <div className='h-full'>
                 {/* Video player */}
                 <div className='h-[75vh] py-4'>
