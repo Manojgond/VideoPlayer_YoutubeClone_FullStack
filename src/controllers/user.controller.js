@@ -141,6 +141,22 @@ const loginUser = asyncHandler(async (req, res) => {
 
 });
 
+const authenticateUser = asyncHandler(async (req, res) =>{
+    try {
+        if (!req.user) {
+            throw new ApiError(401, "User not authenticated");
+        }
+        
+        return res
+        .status(200)
+        .json(
+            new ApiResponse(200, req.user, "User is authenticated.")
+        )
+    } catch (error) {
+        throw new ApiError(401, "Unauthorized request")
+    }
+})
+
 const logoutUser = asyncHandler(async (req, res)=>{
     
     await User.findByIdAndUpdate(
@@ -458,5 +474,6 @@ export {
     updateUserAvatar,
     updateUserCoverImage,
     getUserChannelProfile,
-    getWatchHistory
+    getWatchHistory,
+    authenticateUser
 };
