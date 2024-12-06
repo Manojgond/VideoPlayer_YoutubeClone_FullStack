@@ -24,7 +24,7 @@ const getAllVideos = asyncHandler(async (req, res) => {
         };
         const sortOrder = sortType === 'asc' ? 1 : -1;
 
-        const videos = await Video.find({ owner: userId, ...query })
+        const videos = await Video.find({ ...query })
             .sort({ [sortBy]: sortOrder })
             .skip(options.skip)
             .limit(options.limit)
@@ -42,7 +42,7 @@ const getAllVideos = asyncHandler(async (req, res) => {
         return res
         .status(200)
         .json(
-            new ApiResponse(200, userVideos, "User's all videos fetched successfully")
+            new ApiResponse(200, userVideos, "All videos fetched successfully")
         )
 
     } catch (error) {
