@@ -7,7 +7,7 @@ import { Outlet, useLocation } from 'react-router-dom';
 function PageLayout() {
     const isOpen = useSelector((state) => state.menuhide.isMenuOpen)
     const location = useLocation();
-    const sidebarToHide = (location.pathname === '/VideoPlayer') || (location.pathname === '/login') || (location.pathname === '/register');
+    const sidebarToHide = (location.pathname.includes('/VideoPlayer')) || (location.pathname === '/login') || (location.pathname === '/register');
     const navbarToHide = (location.pathname === '/login') || (location.pathname === '/register');
     
 

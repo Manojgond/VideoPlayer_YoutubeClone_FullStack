@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import Image from '../assets/Background.jpg'
 import loginImage from '../assets/Login_image_nobg.png'
+import { useNavigate } from 'react-router-dom'
 
 function RegisterPage() {
     const [fullName, setFullName] = useState('');
@@ -12,6 +13,8 @@ function RegisterPage() {
 
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+
+    const navigate = useNavigate();
 
     // Handle file input change (avatar and cover image)
     const handleFileChange = (e, setFile) => {
@@ -55,6 +58,7 @@ function RegisterPage() {
             // Handle successful response
             if (response.status === 201) {
                 setSuccess('User registered successfully!');
+                navigate('/login')
             }
         } catch (err) {
             // Handle error response

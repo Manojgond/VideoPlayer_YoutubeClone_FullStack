@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import Image from '../assets/Background.jpg'
 import loginImage from '../assets/Login_image_nobg.png'
+import { useNavigate } from 'react-router-dom'
 
 function LoginPage() {
     const [email, setEmail] = useState('');
@@ -9,6 +10,8 @@ function LoginPage() {
 
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+
+    const navigate = useNavigate()
 
 
     // Form submit handler
@@ -38,6 +41,7 @@ function LoginPage() {
             // Handle successful response
             if (response.status === 200) {
                 setSuccess('User logged in successfully!');
+                navigate('/')
             }
         } catch (err) {
             // Handle error response

@@ -1,17 +1,69 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import VideoPlayer from './VideoPlayer'
 import ThumbUpOutlinedIcon from '@mui/icons-material/ThumbUpOutlined';
 import profilePic from "../assets/profilePic.jpg"
 import CommentSection from './CommentSection';
 import PlaynextVideos from './PlaynextVideos';
+import { useParams } from 'react-router-dom'
 
 function VideoPlayerPage() {
+
+    const { videoId } = useParams()
+    const [video, setVideo] = useState([])
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const getVideo = async () => {
+            try {
+                const url = `http://localhost:8000/api/v1/videos/${videoId}`
+
+                const response = await fetch(url, {
+                    method: 'GET',
+                    credentials: 'include',
+                });
+
+                // Check if the response is OK (status code 200-299)
+                if (!response.ok) {
+                    throw new Error('Failed to fetch videos');
+                }
+
+                // Parse the response data
+                const data = await response.json();
+
+                // Update the state with the fetched videos
+                setVideo(data);
+            } catch (err) {
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        // Call the getVideos function
+        getVideo();
+    }, [])
+
+    const videoUrl = video?.data?.videoFile
+
+    if (loading) {
+        return <div>Loading...</div>;
+    }
+
+    if (error) {
+        return <div>Error: {error}</div>;
+    }
+
     return (
         <div className='w-full h-[2000px] px-20 grid grid-cols-[2fr_1fr] gap-5'>
             <div className='h-full'>
                 {/* Video player */}
                 <div className='h-[75vh] py-4'>
-                    <VideoPlayer />
+                    {videoUrl ? (
+                        <VideoPlayer videoUrl={videoUrl} />
+                    ) : (
+                        <div>Video not available</div>
+                    )}
                 </div>
                 {/* Channel details */}
                 <div>
