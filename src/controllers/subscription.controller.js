@@ -9,7 +9,6 @@ import {asyncHandler} from "../utils/asyncHandler.js"
 const toggleSubscription = asyncHandler(async (req, res) => {
     const {channelId} = req.params
     const user = req.user
-    // TODO: toggle subscription 
     // get user id and check if user exist in channel
     const channel = await User.findById(channelId)
 
@@ -20,8 +19,9 @@ const toggleSubscription = asyncHandler(async (req, res) => {
     if(!channel){
         throw new ApiError(400, "Channel not found")
     }
+    
 
-    const subsribers = await Subscription.find(
+    const subsribers = await Subscription.findOne(
         {
             subsriber: user._id,
             channel: channel._id
@@ -30,7 +30,7 @@ const toggleSubscription = asyncHandler(async (req, res) => {
 
     let isSubscribed = false;
 
-    if(subsribers.length >0){
+    if(subsribers){
         isSubscribed = true;
         await Subscription.deleteOne({
             subsriber: user._id,

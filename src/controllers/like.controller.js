@@ -16,21 +16,17 @@ const toggleVideoLike = asyncHandler(async (req, res) => {
         throw new ApiError(400, "User not found, can't like/unlike")
     }
 
-    const likeObject = Like.findOne(
+    const likeObject = await Like.findOne(
         {
             video: videoId
         }
     )
+    
 
-    let isLiked;
     let like;
 
-    if(likeObject?.length > 0){
-        isLiked = true
-    } else isLiked = false;
-
-    if(isLiked){
-        await Like.findByIdAndDelete(likeObject[0]?._id)
+    if(likeObject){
+        await Like.findByIdAndDelete(likeObject?._id)
         like = ""
     } else {
         like = await Like.create(
