@@ -13,6 +13,13 @@ function VideoPlayer({ videoUrl }) {
             cloud_name: 'ddamqwa7y',
             public_id: videoUrl
         })
+
+        if (videoRef.current) {
+            videoRef.current.play().catch(error => {
+                console.error('Error playing the video:', error);
+            });
+        }
+
     }, [videoUrl]);
 
     return (

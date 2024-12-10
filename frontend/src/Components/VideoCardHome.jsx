@@ -24,14 +24,14 @@ function VideoCardHome(
                 <div className='w-[15%] h-4/5 rounded-full overflow-hidden'>
                     <img src={profilePic} alt="Prifile" className='object-cover' />
                 </div>
-                <div className='w-[80%] h-full p-3 leading-tight'>
+                <div className='w-[80%] h-full p-3 leading-tight text-left'>
                     <p className='overflow-hidden line-clamp-2'>{title}</p>
                 </div>
             </div>
             {/* Channle name and views */}
             <div className='w-full h-[5vh] text-sm text-gray-400 flex'>
                 <div className='w-[20%] h-full'></div>
-                <div className='w-[80%] h-full'>
+                <div className='w-[80%] h-full flex flex-col items-start'>
                     <p className='overflow-hidden truncate'>{channelName}</p>
                     <p>{views} views</p>
                 </div>

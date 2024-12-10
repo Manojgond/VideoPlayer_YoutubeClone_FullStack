@@ -41,6 +41,23 @@ function Homepage() {
     getVideos();
   }, [])
 
+  function formatDurationToHMS(duration) {
+    const hours = Math.floor(duration / 3600); // 1 hour = 3600 seconds
+    const minutes = Math.floor((duration % 3600) / 60); // 1 minute = 60 seconds
+    const seconds = Math.round(duration % 60); // Remaining seconds
+
+    // Ensure that minutes and seconds are always two digits
+    const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
+    const formattedSeconds = seconds < 10 ? `0${seconds}` : seconds;
+
+    // If there are no hours, just return the minutes:seconds format
+    if (hours > 0) {
+      return `${hours}:${formattedMinutes}:${formattedSeconds}`;
+    } else {
+      return `${formattedMinutes}:${formattedSeconds}`;
+    }
+  }
+
 
   const allVideos = videos?.data?.videos || [];
 
@@ -62,12 +79,13 @@ function Homepage() {
           {allVideos.map((video, index) => {
             return (
               <li key={index}>
-                <button onClick={()=>{
+                <button 
+                onClick={() => {
                   navigate(`/VideoPlayer/${video._id}`)
                 }}>
                   <VideoCardHome
                     thumbnail={video.thumbnail}
-                    duration={video.duration}
+                    duration={formatDurationToHMS(video.duration)}
                     profilePic={video.owner.avatar}
                     title={video.title}
                     channelName={video.owner.username}

@@ -21,8 +21,8 @@ function LoginPage() {
         setSuccess('');
 
         // Validate required fields
-        if (!email || !username || !password) {
-            setError('All fields are required, including avatar');
+        if ((!email && !username) || !password) {
+            setError('email or username and password fields are required');
             return;
         }
 
@@ -42,8 +42,14 @@ function LoginPage() {
             if (response.status === 200) {
                 setSuccess('User logged in successfully!');
                 navigate('/')
+            } else if (response.status === 401) {
+                setError('Invalid user credentials')
+            } else if (response.status === 404) {
+                setError('User with entered username or email not found')
             }
+
         } catch (err) {
+            console.log(err)
             // Handle error response
             if (err.response) {
                 setError(err.response.data.message || 'An error occurred');

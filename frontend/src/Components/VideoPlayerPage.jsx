@@ -1,17 +1,19 @@
 import React, { useEffect, useState } from 'react'
 import VideoPlayer from './VideoPlayer'
 import ThumbUpOutlinedIcon from '@mui/icons-material/ThumbUpOutlined';
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import profilePic from "../assets/profilePic.jpg"
 import CommentSection from './CommentSection';
 import PlaynextVideos from './PlaynextVideos';
 import { useParams } from 'react-router-dom'
 
 function VideoPlayerPage() {
-
     const { videoId } = useParams()
     const [video, setVideo] = useState([])
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [isLiked, setIsLiked] = useState(false)
+    const [isSubscribed, setisSubscribed] = useState(false)
 
     useEffect(() => {
         const getVideo = async () => {
@@ -45,6 +47,27 @@ function VideoPlayerPage() {
     }, [])
 
     const videoUrl = video?.data?.videoFile
+
+    async function handleSubscribe() {
+        const userId = video?.data?.owner;
+        const url = `http://localhost:8000/api/v1/subscriptions/c/${userId}`
+        const response = await fetch(url, {
+            method: 'POST',
+            credentials: 'include',
+        });
+
+        setisSubscribed(!isSubscribed)
+    }
+
+    async function handleLike() {
+        const url = `http://localhost:8000/api/v1/likes/toggle/v/${videoId}`
+        const response = await fetch(url, {
+            method: 'POST',
+            credentials: 'include',
+        });
+
+        setIsLiked(!isLiked)
+    }
 
     if (loading) {
         return <div>Loading...</div>;
@@ -84,19 +107,37 @@ function VideoPlayerPage() {
                             </button>
 
                             <div>
-                                <button className='bg-white text-black p-2 rounded-full px-5'>
-                                    <p>SUBSCRIBE</p>
+                                <button
+                                    onClick={handleSubscribe}
+                                    className={`p-2 rounded-full px-5 ${isSubscribed ? "text-white bg-[#212121]" : "bg-white text-black"}`}>
+                                    <p>{isSubscribed ? "Subsribed" : "Subscribe"}</p>
                                 </button>
                             </div>
                         </div>
                         {/* Like and dislike buttons */}
                         <div className='h-full flex items-center pr-5'>
-                            <button className='flex items-center gap-2 py-2 px-8 rounded-full bg-[#212121]'>
-                                <ThumbUpOutlinedIcon />
+                            <button
+                                onClick={handleLike}
+                                className='flex items-center gap-2 py-2 px-8 rounded-full bg-[#212121]'>
+                                {isLiked ? (
+                                    <ThumbUpIcon />
+                                ) : (
+                                    <ThumbUpOutlinedIcon />
+                                )}
                                 <p className='text-xl'>214K</p>
                             </button>
                         </div>
                     </div>
+                </div>
+                {/* Description */}
+                <div className='w-full bg-[#212121] my-5 rounded-lg p-4'>
+                    <div className='flex gap-5'>
+                        <p>12,35,545 views</p>
+                        <p>Nov 6, 2024</p>
+                    </div>
+                    <p className='my-5'>
+                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Illum illo eius maiores animi quam consequatur, facere eveniet non sunt voluptatibus?
+                    </p>
                 </div>
                 {/* Comment section */}
                 <div className='w-full'>
