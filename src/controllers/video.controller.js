@@ -30,7 +30,7 @@ const getAllVideos = asyncHandler(async (req, res) => {
             .limit(options.limit)
             .populate('owner');
 
-        const totalCount = await Video.countDocuments({ owner: userId, ...query });
+        const totalCount = await Video.countDocuments({ ...query });
 
         const userVideos =  {
             videos,
@@ -107,7 +107,7 @@ const getVideoById = asyncHandler(async (req, res) => {
         {
             new: true
         }
-    )
+    ).populate('owner')
 
     return res
     .status(200)
