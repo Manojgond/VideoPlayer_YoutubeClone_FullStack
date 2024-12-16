@@ -1,10 +1,43 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import profilePic from "../assets/profilePic.jpg"
 import ThumbUpOutlinedIcon from '@mui/icons-material/ThumbUpOutlined';
 
-function CommentSection() {
+function CommentSection({ videoId }) {
     const [isFocused, setIsFocused] = useState(false);
-    const [commentText, setCommentText] = useState('')
+    const [content, setContent] = useState('')
+    const [comments, setComments] = useState([])
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [isCommentAdded, setIsCommentAdded] = useState(false) // As soon as new comment added Comments to be fetched again so used.
+
+    const url = `http://localhost:8000/api/v1/comments/${videoId}`
+
+    useEffect(() => {
+        const fetchData = async () => {
+
+            try {
+                const response = await fetch(url, {
+                    method: 'GET',
+                    credentials: 'include',
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch comments');
+                }
+
+                const data = await response.json();
+                console.log(data)
+
+                setComments(data)
+            } catch (err) {
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        fetchData()
+    }, [videoId, isCommentAdded])
 
     const handleFocus = () => {
         setIsFocused(true);
@@ -14,9 +47,36 @@ function CommentSection() {
         setIsFocused(false);
     };
 
+    const handleComment = async () => {
+        const comment = { content }
+
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(comment),
+            credentials: 'include',
+        });
+
+        if (response.status === 200) {
+            setContent('')
+            setIsCommentAdded(!isCommentAdded)
+        }
+    }
+
+    const allComments = comments?.data || [];
+    console.log(allComments)
+
+    if (loading) {
+        return <div>Loading...</div>;
+    }
+
+    if (error) {
+        return <div>Error: {error}</div>;
+    }
+
     return (
         <div>
-            <p className='text-2xl py-5 font-bold'>5,183 Comments</p>
+            <p className='text-2xl py-5 font-bold'>{allComments.length} Comments</p>
             {/* Input to add comment */}
             <div className='w-full flex items-center'>
                 <div className='h-12 w-12 rounded-full overflow-hidden'>
@@ -28,16 +88,16 @@ function CommentSection() {
                         placeholder="Add a comment..."
                         onFocus={handleFocus}
                         onBlur={handleBlur}
-                        value={commentText}
+                        value={content}
                         onChange={(e) => {
-                            setCommentText(e.target.value)
+                            setContent(e.target.value)
                         }}
                         className='outline-none bg-transparent w-full' />
                     <hr className={`border-t-2 border-gray-300 w-full ${isFocused ? "border-opacity-100" : "border-opacity-50"}`} />
                 </div>
             </div>
             <div className={`flex justify-end p-2 gap-2 
-                ${commentText ?
+                ${content ?
                     'block' :
                     isFocused ?
                         'block' :
@@ -45,42 +105,48 @@ function CommentSection() {
                 <button
                     className='font-bold rounded-full p-2 px-4'
                     onClick={() => {
-                        setCommentText('')
+                        setContent('')
                     }}
                 >
                     Cancel
                 </button>
-                <button className='p-2 font-bold rounded-full bg-blue-500 px-4'>Comment</button>
+                <button
+                    onClick={handleComment}
+                    className='p-2 font-bold rounded-full bg-blue-500 px-4'>Comment</button>
             </div>
             {/* Comments */}
             <ul>
-                <li className='py-4'>
-                    <div>
-                        <div className='flex gap-4'>
+                {allComments.map((comment, index) => {
+                    return (
+                        <li className='py-4' key={index}>
                             <div>
-                                <div className='h-12 w-12 rounded-full overflow-hidden'>
-                                    <img src={profilePic} alt="" className='object-cover' />
+                                <div className='flex gap-4'>
+                                    <div>
+                                        <div className='h-12 w-12 rounded-full overflow-hidden'>
+                                            <img src={comment.owner[0].avatar} alt="" className='object-cover' />
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div className='flex gap-4 items-center'>
+                                            <p>{comment.owner[0].username}</p>
+                                            <p className='text-sm text-gray-400'>1 year ago</p>
+                                        </div>
+                                        <p>{comment.content}</p>
+                                        <div className='flex gap-2'>
+                                            <button className='flex items-center gap-2 pr-2 rounded-full py-2'>
+                                                <ThumbUpOutlinedIcon />
+                                                <p>214K</p>
+                                            </button>
+                                            <button>Reply</button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <div>
-                                <div className='flex gap-4 items-center'>
-                                    <p>Channle name</p>
-                                    <p className='text-sm text-gray-400'>1 year ago</p>
-                                </div>
-                                <p>This is a comment text and Lorem ipsum dolor sit, amet consectetur adipisicing elit. Alias omnis ab repellendus! Iure omnis vitae nobis nesciunt ipsam! Dolores, aliquam!</p>
-                                <div className='flex gap-2'>
-                                    <button className='flex items-center gap-2 pr-2 rounded-full py-2'>
-                                        <ThumbUpOutlinedIcon />
-                                        <p>214K</p>
-                                    </button>
-                                    <button>Reply</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </li>
-            </ul>
+                        </li>
+                    )
+                })}
 
+            </ul>
         </div>
     )
 }

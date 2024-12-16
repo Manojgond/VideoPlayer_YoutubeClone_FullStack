@@ -40,6 +40,26 @@ function VideoPlayerPage() {
             } finally {
                 setLoading(false);
             }
+
+            try {
+                const url = `http://localhost:8000/api/v1/videos/${videoId}`
+
+                const response = await fetch(url, {
+                    method: 'GET',
+                    credentials: 'include',
+                });
+
+                // Check if the response is OK (status code 200-299)
+                if (!response.ok) {
+                    throw new Error('Failed to fetch videos');
+                }
+
+                const newResponse = await response.json();
+
+                setIsLiked(newResponse?.data)
+            } catch (error) {
+                setError(err.message);
+            }
         };
 
         // Call the getVideos function
@@ -90,7 +110,7 @@ function VideoPlayerPage() {
                 </div>
                 {/* Channel details */}
                 <div>
-                    <p className='text-xl font-bold'>Lorem ipsum dolor sit amet consectetur adipisicing elit. Eos molestias eum esse obcaecati dolor voluptas nihil animi ea! Nostrum earum ea ad obcaecati perspiciatis eveniet?</p>
+                    <p className='text-xl font-bold'>{video?.data.title}</p>
                     <div className='w-full flex h-12 justify-between mt-5'>
                         {/* Channel name and subs button */}
                         <div className='h-full flex gap-5 items-center'>
@@ -99,8 +119,8 @@ function VideoPlayerPage() {
                                     <div className='h-full w-12 rounded-full overflow-hidden'>
                                         <img src={profilePic} alt="Profile Pic" className='object-cover' />
                                     </div>
-                                    <div>
-                                        <p>Manoj Gaming</p>
+                                    <div className='text-left'>
+                                        <p>{video?.data.owner.fullName}</p>
                                         <p className='text-xs text-gray-400'>1.01M Subscribers</p>
                                     </div>
                                 </div>
@@ -141,7 +161,9 @@ function VideoPlayerPage() {
                 </div>
                 {/* Comment section */}
                 <div className='w-full'>
-                    <CommentSection />
+                    <CommentSection
+                    videoId={videoId}
+                    />
                 </div>
             </div>
             <div>
