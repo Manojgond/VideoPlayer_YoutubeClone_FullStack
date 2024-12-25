@@ -58,22 +58,17 @@ const toggleCommentLike = asyncHandler(async (req, res) => {
         throw new ApiError(400, "User not found, can't like/unlike")
     }
 
-    const likeObject = Like.findOne(
+    const likeObject = await Like.findOne(
         {
             comment: commentId,
             likedBy: user._id
         }
     )
 
-    let isLiked;
     let like;
 
-    if (likeObject?.length > 0) {
-        isLiked = true
-    } else isLiked = false;
-
-    if (isLiked) {
-        await Like.findByIdAndDelete(likeObject[0]?._id)
+    if (likeObject) {
+        await Like.findByIdAndDelete(likeObject?._id)
         like = ""
     } else {
         like = await Like.create(
@@ -103,22 +98,17 @@ const toggleTweetLike = asyncHandler(async (req, res) => {
         throw new ApiError(400, "User not found, can't like/unlike")
     }
 
-    const likeObject = Like.findOne(
+    const likeObject = await Like.findOne(
         {
             tweet: tweetId,
             likedBy: user._id
         }
     )
 
-    let isLiked;
     let like;
 
-    if (likeObject?.length > 0) {
-        isLiked = true
-    } else isLiked = false;
-
-    if (isLiked) {
-        await Like.findByIdAndDelete(likeObject[0]?._id)
+    if (likeObject) {
+        await Like.findByIdAndDelete(likeObject?._id)
         like = ""
     } else {
         like = await Like.create(
@@ -176,41 +166,33 @@ const isLikedVideo = asyncHandler(async (req, res) => {
         }
     )
 
-    const isLiked = likeObject ? true : false ;
+    const isLiked = likeObject ? true : false;
 
     return res
-    .status(200)
-    .json(
-        new ApiResponse(200, isLiked, "Video liked status sent properly")
-    )
+        .status(200)
+        .json(
+            new ApiResponse(200, isLiked, "Video liked status sent properly")
+        )
 })
 
-const isLikedComment = asyncHandler(async (req, res) => {
-    const { commentId } = req.params
-    const user = req.user
+const videoTotalLikes = asyncHandler(async (req, res) => {
+    const { videoId } = req.params
 
-    if (!user) {
-        throw new ApiError(400, "User not found, Unauthorized request")
+    if (!videoId) {
+        throw new ApiError(400, "Video ID not found")
     }
 
-    if (!commentId) {
-        throw new ApiError(400, "Comment ID not found")
-    }
-
-    const likeObject = await Like.findOne(
+    const totalLikes = await Like.countDocuments(
         {
-            comment: commentId,
-            likedBy: user._id
+            video: videoId
         }
     )
 
-    const isLiked = likeObject ? true : false ;
-
     return res
-    .status(200)
-    .json(
-        new ApiResponse(200, isLiked, "Comment liked status sent properly")
-    )
+        .status(200)
+        .json(
+            new ApiResponse(200, totalLikes, "Total likes of given video fetched successfully")
+        )
 })
 
 export {
@@ -219,5 +201,5 @@ export {
     toggleVideoLike,
     getLikedVideos,
     isLikedVideo,
-    isLikedComment
+    videoTotalLikes
 }

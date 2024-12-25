@@ -13,6 +13,7 @@ function VideoPlayerPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [isLiked, setIsLiked] = useState(false)
+    const [likes, setLikes] = useState(0)
     const [isSubscribed, setisSubscribed] = useState(false)
 
     useEffect(() => {
@@ -42,21 +43,39 @@ function VideoPlayerPage() {
             }
 
             try {
-                const url = `http://localhost:8000/api/v1/videos/${videoId}`
+                const url = `http://localhost:8000/api/v1/likes/video/isliked/${videoId}`
 
                 const response = await fetch(url, {
                     method: 'GET',
                     credentials: 'include',
                 });
 
-                // Check if the response is OK (status code 200-299)
                 if (!response.ok) {
-                    throw new Error('Failed to fetch videos');
+                    throw new Error('Failed to fetch likedStatus');
                 }
 
-                const newResponse = await response.json();
+                const jsonResponse = await response.json();
 
-                setIsLiked(newResponse?.data)
+                setIsLiked(jsonResponse?.data)
+            } catch (error) {
+                setError(err.message);
+            }
+
+            try {
+                const url = `http://localhost:8000/api/v1/likes/video/likescount/${videoId}`
+
+                const response = await fetch(url, {
+                    method: 'GET',
+                    credentials: 'include',
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch likes');
+                }
+
+                const jsonResponse = await response.json();
+
+                setLikes(jsonResponse?.data)
             } catch (error) {
                 setError(err.message);
             }
@@ -67,6 +86,16 @@ function VideoPlayerPage() {
     }, [])
 
     const videoUrl = video?.data?.videoFile
+
+    function formatLikes(likesCount) {
+        if ((likesCount / 1000000000) > 1) {
+            return `${Math.floor((likesCount / 1000000000) * 10) / 10}B`;
+        } else if ((likesCount / 1000000) > 1) {
+            return `${Math.floor((likesCount / 1000000) * 10) / 10}M`;
+        } else if ((likesCount / 1000) > 1) {
+            return `${Math.floor((likesCount / 1000) * 10) / 10}K`;
+        } else return likesCount
+    }
 
     async function handleSubscribe() {
         const userId = video?.data?.owner;
@@ -87,6 +116,10 @@ function VideoPlayerPage() {
         });
 
         setIsLiked(!isLiked)
+
+        if(isLiked){
+            setLikes(likes-1)
+        } else setLikes(likes+1)
     }
 
     if (loading) {
@@ -144,7 +177,7 @@ function VideoPlayerPage() {
                                 ) : (
                                     <ThumbUpOutlinedIcon />
                                 )}
-                                <p className='text-xl'>214K</p>
+                                <p className='text-xl'>{formatLikes(likes)}</p>
                             </button>
                         </div>
                     </div>
@@ -162,7 +195,7 @@ function VideoPlayerPage() {
                 {/* Comment section */}
                 <div className='w-full'>
                     <CommentSection
-                    videoId={videoId}
+                        videoId={videoId}
                     />
                 </div>
             </div>

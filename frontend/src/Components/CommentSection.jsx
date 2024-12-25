@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import profilePic from "../assets/profilePic.jpg"
 import ThumbUpOutlinedIcon from '@mui/icons-material/ThumbUpOutlined';
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 
 function CommentSection({ videoId }) {
     const [isFocused, setIsFocused] = useState(false);
@@ -26,9 +27,8 @@ function CommentSection({ videoId }) {
                 }
 
                 const data = await response.json();
-                console.log(data)
 
-                setComments(data)
+                setComments(data?.data)
             } catch (err) {
                 setError(err.message);
             } finally {
@@ -63,8 +63,42 @@ function CommentSection({ videoId }) {
         }
     }
 
-    const allComments = comments?.data || [];
-    console.log(allComments)
+    function formatLikes(likes) {
+        if ((likes / 1000000000) > 1) {
+            return `${Math.floor((likes / 1000000000) * 10) / 10}B`;
+        } else if ((likes / 1000000) > 1) {
+            return `${Math.floor((likes / 1000000) * 10) / 10}M`;
+        } else if ((likes / 1000) > 1) {
+            return `${Math.floor((likes / 1000) * 10) / 10}K`;
+        } else return likes
+    }
+
+    const handleLike = async (commentId) => {
+        const url = `http://localhost:8000/api/v1/likes/toggle/c/${commentId}`;
+        const response = await fetch(url, {
+            method: 'POST',
+            credentials: 'include',
+        });
+
+        if (response.ok) {
+            // Update the comment state with the new like status and count
+            setComments((prevComments) => {
+                const allComments = prevComments?.data || []
+                return allComments.map((comment) =>
+                    comment._id === commentId
+                        ? {
+                            ...comment,
+                            isLiked: !comment.isLiked,
+                            likesCount: comment.isLiked ? comment.likesCount - 1 : comment.likesCount + 1,
+                        }
+                        : comment
+                )
+            }
+            );
+        }
+    };
+
+    // const allComments = comments || [];
 
     if (loading) {
         return <div>Loading...</div>;
@@ -76,7 +110,7 @@ function CommentSection({ videoId }) {
 
     return (
         <div>
-            <p className='text-2xl py-5 font-bold'>{allComments.length} Comments</p>
+            <p className='text-2xl py-5 font-bold'>{comments.length} Comments</p>
             {/* Input to add comment */}
             <div className='w-full flex items-center'>
                 <div className='h-12 w-12 rounded-full overflow-hidden'>
@@ -116,7 +150,7 @@ function CommentSection({ videoId }) {
             </div>
             {/* Comments */}
             <ul>
-                {allComments.map((comment, index) => {
+                {comments.map((comment, index) => {
                     return (
                         <li className='py-4' key={index}>
                             <div>
@@ -133,9 +167,13 @@ function CommentSection({ videoId }) {
                                         </div>
                                         <p>{comment.content}</p>
                                         <div className='flex gap-2'>
-                                            <button className='flex items-center gap-2 pr-2 rounded-full py-2'>
-                                                <ThumbUpOutlinedIcon />
-                                                <p>214K</p>
+                                            <button
+                                                onClick={() => handleLike(comment._id)}
+                                                className='flex items-center gap-2 pr-2 rounded-full py-2'>
+                                                {comment.isLiked
+                                                    ? <ThumbUpIcon />
+                                                    : <ThumbUpOutlinedIcon />}
+                                                <p>{(formatLikes(comment.likesCount) > 0) ? formatLikes(comment.likesCount) : ""}</p>
                                             </button>
                                             <button>Reply</button>
                                         </div>

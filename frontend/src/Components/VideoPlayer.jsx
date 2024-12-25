@@ -10,6 +10,7 @@ function VideoPlayer({ videoUrl }) {
         cloudinaryRef.current = window.cloudinary;
 
         cloudinaryRef.current.videoPlayer(videoRef.current, {
+            // TODO: Use environment variable for cloud name
             cloud_name: 'ddamqwa7y',
             public_id: videoUrl
         })

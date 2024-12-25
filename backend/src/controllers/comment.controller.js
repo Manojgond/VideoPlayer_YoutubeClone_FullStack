@@ -5,7 +5,6 @@ import { ApiResponse } from "../utils/ApiResponse.js"
 import { asyncHandler } from "../utils/asyncHandler.js"
 
 const getVideoComments = asyncHandler(async (req, res) => {
-    //TODO: get all comments for a video
     const { videoId } = req.params
     const { page = 1, limit = 10 } = req.query
 
@@ -30,6 +29,52 @@ const getVideoComments = asyncHandler(async (req, res) => {
                     }
                 ]
             }
+        },
+        {
+            $lookup: {
+                from: "likes",
+                localField: "_id",
+                foreignField: "comment",
+                as: "likes"
+            }
+        },
+        {
+            $addFields: {
+                isLiked: {
+                    $cond: {
+                        if: {
+                            $gt: [
+                                {
+                                    $size: {
+                                        $filter: {
+                                            input: "$likes",
+                                            as: "like",
+                                            cond: {
+                                                $eq: ["$$like.likedBy", new mongoose.Types.ObjectId(req.user?._id)]
+                                            }
+                                        }
+                                    }
+                                },
+                                0
+                            ]
+                        },
+                        then: true,
+                        else: false
+                    }
+                },
+                likesCount: {
+                    $size: '$likes'
+                }
+            }
+        },
+        {
+            $project: {
+                content: 1,
+                video: 1,
+                owner: 1,
+                isLiked: 1,
+                likesCount: 1,
+            }
         }
     ])
 
@@ -41,19 +86,19 @@ const getVideoComments = asyncHandler(async (req, res) => {
 })
 
 const addComment = asyncHandler(async (req, res) => {
-    const {videoId} = req.params
-    const {content} = req.body
+    const { videoId } = req.params
+    const { content } = req.body
     const user = req.user
 
-    if(!videoId){
+    if (!videoId) {
         throw new ApiError(400, "Video ID not found")
     }
 
-    if(!user){
+    if (!user) {
         throw new ApiError(400, "User not found, can't add comment")
     }
 
-    if(!content?.trim()){
+    if (!content?.trim()) {
         throw new ApiError(400, "Comment text cannot be blank")
     }
 
@@ -66,10 +111,10 @@ const addComment = asyncHandler(async (req, res) => {
     )
 
     return res
-    .status(200)
-    .json(
-        new ApiResponse(200, comment, "Comment added successfully")
-    )
+        .status(200)
+        .json(
+            new ApiResponse(200, comment, "Comment added successfully")
+        )
 
 })
 
