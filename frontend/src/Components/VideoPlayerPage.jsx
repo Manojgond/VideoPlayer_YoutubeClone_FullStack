@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react'
 import VideoPlayer from './VideoPlayer'
 import ThumbUpOutlinedIcon from '@mui/icons-material/ThumbUpOutlined';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
-import profilePic from "../assets/profilePic.jpg"
 import CommentSection from './CommentSection';
 import PlaynextVideos from './PlaynextVideos';
 import { useParams } from 'react-router-dom'
@@ -35,7 +34,8 @@ function VideoPlayerPage() {
                 const data = await response.json();
 
                 // Update the state with the fetched videos
-                setVideo(data);
+                setVideo(data?.data);
+                setisSubscribed(data.data?.owner?.isSubscribed)
             } catch (err) {
                 setError(err.message);
             } finally {
@@ -85,20 +85,20 @@ function VideoPlayerPage() {
         getVideo();
     }, [])
 
-    const videoUrl = video?.data?.videoFile
+    const videoUrl = video?.videoFile
 
-    function formatLikes(likesCount) {
-        if ((likesCount / 1000000000) > 1) {
-            return `${Math.floor((likesCount / 1000000000) * 10) / 10}B`;
-        } else if ((likesCount / 1000000) > 1) {
-            return `${Math.floor((likesCount / 1000000) * 10) / 10}M`;
-        } else if ((likesCount / 1000) > 1) {
-            return `${Math.floor((likesCount / 1000) * 10) / 10}K`;
-        } else return likesCount
+    function formatNumbers(numbers) {
+        if ((numbers / 1000000000) > 1) {
+            return `${Math.floor((numbers / 1000000000) * 10) / 10}B`;
+        } else if ((numbers / 1000000) > 1) {
+            return `${Math.floor((numbers / 1000000) * 10) / 10}M`;
+        } else if ((numbers / 1000) > 1) {
+            return `${Math.floor((numbers / 1000) * 10) / 10}K`;
+        } else return numbers
     }
 
     async function handleSubscribe() {
-        const userId = video?.data?.owner;
+        const userId = video?.owner._id;
         const url = `http://localhost:8000/api/v1/subscriptions/c/${userId}`
         const response = await fetch(url, {
             method: 'POST',
@@ -117,9 +117,9 @@ function VideoPlayerPage() {
 
         setIsLiked(!isLiked)
 
-        if(isLiked){
-            setLikes(likes-1)
-        } else setLikes(likes+1)
+        if (isLiked) {
+            setLikes(likes - 1)
+        } else setLikes(likes + 1)
     }
 
     if (loading) {
@@ -141,20 +141,20 @@ function VideoPlayerPage() {
                         <div>Video not available</div>
                     )}
                 </div>
+                <p className='text-xl font-bold'>{video?.title}</p>
                 {/* Channel details */}
                 <div>
-                    <p className='text-xl font-bold'>{video?.data.title}</p>
                     <div className='w-full flex h-12 justify-between mt-5'>
                         {/* Channel name and subs button */}
                         <div className='h-full flex gap-5 items-center'>
                             <button className='h-full w-full'>
                                 <div className='flex h-full items-center gap-2'>
                                     <div className='h-full w-12 rounded-full overflow-hidden'>
-                                        <img src={profilePic} alt="Profile Pic" className='object-cover' />
+                                        <img src={video?.owner?.avatar} alt="Profile Pic" className='object-cover' />
                                     </div>
                                     <div className='text-left'>
-                                        <p>{video?.data.owner.fullName}</p>
-                                        <p className='text-xs text-gray-400'>1.01M Subscribers</p>
+                                        <p>{video?.owner?.fullName}</p>
+                                        <p className='text-xs text-gray-400'>{`${formatNumbers(video?.owner?.subscribersCount)} Subscribers`}</p>
                                     </div>
                                 </div>
                             </button>
@@ -163,11 +163,11 @@ function VideoPlayerPage() {
                                 <button
                                     onClick={handleSubscribe}
                                     className={`p-2 rounded-full px-5 ${isSubscribed ? "text-white bg-[#212121]" : "bg-white text-black"}`}>
-                                    <p>{isSubscribed ? "Subsribed" : "Subscribe"}</p>
+                                    <p>{isSubscribed ? "subscribed" : "Subscribe"}</p>
                                 </button>
                             </div>
                         </div>
-                        {/* Like and dislike buttons */}
+                        {/* Like button */}
                         <div className='h-full flex items-center pr-5'>
                             <button
                                 onClick={handleLike}
@@ -177,7 +177,7 @@ function VideoPlayerPage() {
                                 ) : (
                                     <ThumbUpOutlinedIcon />
                                 )}
-                                <p className='text-xl'>{formatLikes(likes)}</p>
+                                <p className='text-xl'>{formatNumbers(likes)}</p>
                             </button>
                         </div>
                     </div>
@@ -185,12 +185,10 @@ function VideoPlayerPage() {
                 {/* Description */}
                 <div className='w-full bg-[#212121] my-5 rounded-lg p-4'>
                     <div className='flex gap-5'>
-                        <p>12,35,545 views</p>
-                        <p>Nov 6, 2024</p>
+                        <p>{`${formatNumbers(video?.views)} views`}</p>
+                        <p>{video?.createdAt}</p>
                     </div>
-                    <p className='my-5'>
-                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Illum illo eius maiores animi quam consequatur, facere eveniet non sunt voluptatibus?
-                    </p>
+                    <p className='my-5'>{video?.description}</p>
                 </div>
                 {/* Comment section */}
                 <div className='w-full'>

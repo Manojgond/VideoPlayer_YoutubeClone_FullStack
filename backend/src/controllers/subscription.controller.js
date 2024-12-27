@@ -21,25 +21,25 @@ const toggleSubscription = asyncHandler(async (req, res) => {
     }
     
 
-    const subsribers = await Subscription.findOne(
+    const subscribers = await Subscription.findOne(
         {
-            subsriber: user._id,
+            subscriber: user._id,
             channel: channel._id
         }
     )
 
     let isSubscribed = false;
 
-    if(subsribers){
+    if(subscribers){
         isSubscribed = true;
         await Subscription.deleteOne({
-            subsriber: user._id,
+            subscriber: user._id,
             channel: channel._id
         })
     } else{
         isSubscribed = false;
         await Subscription.create({
-            subsriber: user._id,
+            subscriber: user._id,
             channel: channel._id
         })
     }
@@ -66,7 +66,7 @@ const getUserChannelSubscribers = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Channel not found")
     }
 
-    const subsribers = await Subscription.aggregate([
+    const subscribers = await Subscription.aggregate([
         {
             $match:{
                 channel: channel._id
@@ -75,7 +75,7 @@ const getUserChannelSubscribers = asyncHandler(async (req, res) => {
         {
             $lookup:{
                 from: "users",
-                localField: "subsriber",
+                localField: "subscriber",
                 foreignField: "_id",
                 as: "subscriber",
                 pipeline: [
@@ -101,7 +101,7 @@ const getUserChannelSubscribers = asyncHandler(async (req, res) => {
     return res
     .status(200)
     .json(
-        new ApiResponse(200, subsribers, "Subscriber list fetched successfully")
+        new ApiResponse(200, subscribers, "Subscriber list fetched successfully")
     )
 
 })
@@ -123,7 +123,7 @@ const getSubscribedChannels = asyncHandler(async (req, res) => {
     const subscribedChannels = await Subscription.aggregate([
         {
             $match:{
-                subsriber: subscriber._id
+                subscriber: subscriber._id
             }
         },
         {

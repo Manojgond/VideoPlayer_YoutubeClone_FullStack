@@ -1,20 +1,20 @@
-import mongoose, {isValidObjectId} from "mongoose"
-import {Video} from "../models/video.model.js"
-import {User} from "../models/user.model.js"
-import {ApiError} from "../utils/ApiError.js"
-import {ApiResponse} from "../utils/ApiResponse.js"
-import {asyncHandler} from "../utils/asyncHandler.js"
-import {uploadOnCloudinary} from "../utils/cloudinary.js"
+import mongoose, { isValidObjectId } from "mongoose"
+import { Video } from "../models/video.model.js"
+import { User } from "../models/user.model.js"
+import { ApiError } from "../utils/ApiError.js"
+import { ApiResponse } from "../utils/ApiResponse.js"
+import { asyncHandler } from "../utils/asyncHandler.js"
+import { uploadOnCloudinary } from "../utils/cloudinary.js"
 
 
 const getAllVideos = asyncHandler(async (req, res) => {
     const { page = 1, limit = 10, query, sortBy, sortType } = req.query
     const user = req.user
-    if(!user){
+    if (!user) {
         throw new ApiError(400, "User does not exist")
     }
     const userId = user._id;
-    
+
     try {
         const pageNum = parseInt(page, 10);
         const limitNum = parseInt(limit, 10);
@@ -32,7 +32,7 @@ const getAllVideos = asyncHandler(async (req, res) => {
 
         const totalCount = await Video.countDocuments({ ...query });
 
-        const userVideos =  {
+        const userVideos = {
             videos,
             totalCount,
             totalPages: Math.ceil(totalCount / limitNum),
@@ -40,10 +40,10 @@ const getAllVideos = asyncHandler(async (req, res) => {
         };
 
         return res
-        .status(200)
-        .json(
-            new ApiResponse(200, userVideos, "All videos fetched successfully")
-        )
+            .status(200)
+            .json(
+                new ApiResponse(200, userVideos, "All videos fetched successfully")
+            )
 
     } catch (error) {
         console.error(error);
@@ -52,22 +52,22 @@ const getAllVideos = asyncHandler(async (req, res) => {
 })
 
 const publishAVideo = asyncHandler(async (req, res) => {
-    const { title, description} = req.body
-    if(!title || !description){
+    const { title, description } = req.body
+    if (!title || !description) {
         throw new ApiError(400, "Title and description required")
     }
 
     const videoLocalPath = req.files?.videoFile[0]?.path
     const thumbnailLocalPath = req.files?.thumbnail[0]?.path
 
-    if(!videoLocalPath || !thumbnailLocalPath){
+    if (!videoLocalPath || !thumbnailLocalPath) {
         throw new ApiError(400, "Video and Thumbnail is required")
     }
 
     const video = await uploadOnCloudinary(videoLocalPath)
     const thumbnail = await uploadOnCloudinary(thumbnailLocalPath)
 
-    if(!video || !thumbnail){
+    if (!video || !thumbnail) {
         throw new ApiError(400, "Video or thumbnail missing, Someting went wrong while uploading")
     }
 
@@ -82,68 +82,136 @@ const publishAVideo = asyncHandler(async (req, res) => {
             owner: req.user?._id
         }
     )
-    
+
     return res
-    .status(200)
-    .json(
-        new ApiResponse(200, publishedVideo, "Video published successfully")
-    )
+        .status(200)
+        .json(
+            new ApiResponse(200, publishedVideo, "Video published successfully")
+        )
 })
 
 const getVideoById = asyncHandler(async (req, res) => {
     const { videoId } = req.params
 
-    if(!videoId){
+    if (!videoId) {
         throw new ApiError(400, "Video ID not found")
     }
 
-    const video = await Video.findByIdAndUpdate(
+    await Video.findByIdAndUpdate(
         videoId,
         {
             $inc: {
                 views: 1
             }
+        }
+    )
+
+    const video = await Video.aggregate([
+        {
+            $match: {
+                _id: new mongoose.Types.ObjectId(videoId)
+            }
         },
         {
-            new: true
+            $lookup: {
+                from: "users",
+                localField: "owner",
+                foreignField: "_id",
+                as: "owner",
+                pipeline: [
+                    {
+                        $lookup: {
+                            from: "subscriptions",
+                            localField: "_id",
+                            foreignField: "channel",
+                            as: "subscribers"
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: "subscriptions",
+                            localField: "_id",
+                            foreignField: "subscriber",
+                            as: "subscribedTo"
+                        }
+                    },
+                    {
+                        $addFields: {
+                            subscribersCount: {
+                                $size: "$subscribers"
+                            },
+                            channelsSubscribedToCount: {
+                                $size: "$subscribedTo"
+                            },
+                            isSubscribed: {
+                                $cond: {
+                                    if: {
+                                        $gt: [
+                                            {
+                                                $size: {
+                                                    $filter: {
+                                                        input: "$subscribers",
+                                                        as: "subscriber",
+                                                        cond: { $eq: ["$$subscriber.subscriber", new mongoose.Types.ObjectId(req.user?._id)] }
+                                                    }
+                                                }
+                                            },
+                                            0
+                                        ]
+                                    },
+                                    then: true,
+                                    else: false
+                                }
+                            }
+                        }
+                    },
+                ]
+            }
+        },
+        {
+            $addFields:{
+                owner: {
+                    $first: "$owner"
+                }
+            }
         }
-    ).populate('owner')
+    ])
 
     return res
-    .status(200)
-    .json(
-        new ApiResponse(200, video, "Requested video fetched successfully")
-    )
+        .status(200)
+        .json(
+            new ApiResponse(200, video[0], "Requested video fetched successfully")
+        )
 })
 
 const updateVideo = asyncHandler(async (req, res) => {
     const { videoId } = req.params
-    const {title, description} = req.body
+    const { title, description } = req.body
 
     const thumbnailLocalPath = req.file?.path;
 
-    if(!thumbnailLocalPath){
+    if (!thumbnailLocalPath) {
         throw new ApiError(400, "thumbnail file is missing")
     }
 
     const thumbnail = await uploadOnCloudinary(thumbnailLocalPath)
 
-    if(!thumbnail?.url){
+    if (!thumbnail?.url) {
         throw new ApiError(400, "Something went wrong when uploading file on cloudinary")
     }
 
-    if(!videoId){
+    if (!videoId) {
         throw new ApiError(400, "Video ID is missing")
     }
 
-    if(!title || !description){
+    if (!title || !description) {
         throw new ApiError(400, "Title and description required")
     }
 
     const video = await Video.findByIdAndUpdate(
         videoId,
         {
-            $set:{
+            $set: {
                 title,
                 description,
                 thumbnail: thumbnail.url
@@ -155,32 +223,32 @@ const updateVideo = asyncHandler(async (req, res) => {
     )
 
     return res
-    .status(200)
-    .json(
-        new ApiResponse(200, video, "Video details updated successfully")
-    )
+        .status(200)
+        .json(
+            new ApiResponse(200, video, "Video details updated successfully")
+        )
 })
 
 const deleteVideo = asyncHandler(async (req, res) => {
     const { videoId } = req.params
 
-    if(!videoId){
+    if (!videoId) {
         throw new ApiError(400, "Video ID is missing")
     }
 
     await Video.findByIdAndDelete(videoId)
 
     return res
-    .status(200)
-    .json(
-        new ApiResponse(200, {}, "Video deleted successfully")
-    )
+        .status(200)
+        .json(
+            new ApiResponse(200, {}, "Video deleted successfully")
+        )
 })
 
 const togglePublishStatus = asyncHandler(async (req, res) => {
     const { videoId } = req.params
 
-    if(!videoId){
+    if (!videoId) {
         throw new ApiError(400, "Video ID is missing")
     }
 
@@ -190,7 +258,7 @@ const togglePublishStatus = asyncHandler(async (req, res) => {
     const updatedVideo = await Video.findByIdAndUpdate(
         videoId,
         {
-            $set:{
+            $set: {
                 isPublished: !currentPublishStatus
             }
         },
@@ -200,10 +268,10 @@ const togglePublishStatus = asyncHandler(async (req, res) => {
     )
 
     return res
-    .status(200)
-    .json(
-        new ApiResponse(200, updatedVideo, "Video publish status changed successfully")
-    )
+        .status(200)
+        .json(
+            new ApiResponse(200, updatedVideo, "Video publish status changed successfully")
+        )
 })
 
 export {

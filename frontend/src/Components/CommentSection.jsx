@@ -83,8 +83,7 @@ function CommentSection({ videoId }) {
         if (response.ok) {
             // Update the comment state with the new like status and count
             setComments((prevComments) => {
-                const allComments = prevComments?.data || []
-                return allComments.map((comment) =>
+                return prevComments.map((comment) =>
                     comment._id === commentId
                         ? {
                             ...comment,
@@ -97,8 +96,6 @@ function CommentSection({ videoId }) {
             );
         }
     };
-
-    // const allComments = comments || [];
 
     if (loading) {
         return <div>Loading...</div>;
