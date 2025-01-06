@@ -92,11 +92,17 @@ const publishAVideo = asyncHandler(async (req, res) => {
 
 const getVideoById = asyncHandler(async (req, res) => {
     const { videoId } = req.params
+    const user = req.user;
 
     if (!videoId) {
         throw new ApiError(400, "Video ID not found")
     }
 
+    if (!user) {
+        return { error: "User not found" };
+    }
+
+    // Increment video views by one
     await Video.findByIdAndUpdate(
         videoId,
         {
@@ -105,6 +111,13 @@ const getVideoById = asyncHandler(async (req, res) => {
             }
         }
     )
+
+    // Add videoId to user's Watchhistory
+    user.watchHistory = user.watchHistory.filter(video=> !video.equals(videoId))
+    user.watchHistory.push(videoId)
+
+    await user.save();
+
 
     const video = await Video.aggregate([
         {
