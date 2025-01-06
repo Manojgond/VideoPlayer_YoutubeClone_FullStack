@@ -16,6 +16,7 @@ function VideoPlayerPage() {
     const [isSubscribed, setisSubscribed] = useState(false)
 
     useEffect(() => {
+        setLoading(true)
         const getVideo = async () => {
             try {
                 const url = `http://localhost:8000/api/v1/videos/${videoId}`
@@ -83,7 +84,7 @@ function VideoPlayerPage() {
 
         // Call the getVideos function
         getVideo();
-    }, [])
+    }, [videoId])
 
     const videoUrl = video?.videoFile
 
@@ -95,6 +96,15 @@ function VideoPlayerPage() {
         } else if ((numbers / 1000) > 1) {
             return `${Math.floor((numbers / 1000) * 10) / 10}K`;
         } else return numbers
+    }
+
+    function formatDates(dateString){
+        const date = new Date(dateString)
+        return date.toLocaleDateString('en-Us', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+        })
     }
 
     async function handleSubscribe() {
@@ -186,7 +196,7 @@ function VideoPlayerPage() {
                 <div className='w-full bg-[#212121] my-5 rounded-lg p-4'>
                     <div className='flex gap-5'>
                         <p>{`${formatNumbers(video?.views)} views`}</p>
-                        <p>{video?.createdAt}</p>
+                        <p>{formatDates(video?.createdAt)}</p>
                     </div>
                     <p className='my-5'>{video?.description}</p>
                 </div>
@@ -198,7 +208,9 @@ function VideoPlayerPage() {
                 </div>
             </div>
             <div>
-                <PlaynextVideos />
+                <PlaynextVideos
+                currentVideo={videoId}
+                />
             </div>
         </div>
     )

@@ -29,7 +29,7 @@ function Homepage() {
         const data = await response.json();
 
         // Update the state with the fetched videos
-        setVideos(data);
+        setVideos(data?.data?.videos);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -59,7 +59,6 @@ function Homepage() {
   }
 
 
-  const allVideos = videos?.data?.videos || [];
 
   if (loading) {
     return <div>Loading...</div>;
@@ -72,11 +71,11 @@ function Homepage() {
   return (
 
     <div className="p-2">
-      {allVideos.length === 0 ? (
+      {videos.length === 0 ? (
         <p>No videos available</p> // Show a message if there are no videos
       ) : (
         <ul className="grid grid-cols-4 gap-4">
-          {allVideos.map((video, index) => {
+          {videos.map((video, index) => {
             return (
               <li key={index}>
                 <button 

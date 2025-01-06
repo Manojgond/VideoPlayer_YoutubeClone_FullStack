@@ -18,7 +18,7 @@ const router = createBrowserRouter(
             } />
             <Route path='VideoPlayer/:videoId' element={
                 <PrivateRoute>
-                    <VideoPlayerPage />
+                    <VideoPlayerPage key={window.location.pathname} />
                 </PrivateRoute>
                 } />
             <Route path='History' element={

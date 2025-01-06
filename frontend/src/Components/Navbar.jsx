@@ -33,6 +33,7 @@ function Navbar() {
       margin: 'auto',
       textAlign: 'center',
       borderRadius: '20px',
+      backgroundColor: '#282828',
     },
   };
 
@@ -44,7 +45,7 @@ function Navbar() {
       credentials: 'include'
     })
 
-    if(response.status === 200){
+    if (response.status === 200) {
       console.log('logged out successfully')
       navigate('/login')
     }
@@ -60,7 +61,14 @@ function Navbar() {
         <button className={`p-3 ${menuIconToHide ? "hidden" : "block"}`} onClick={() => dispatch(toggleMenuHide())}>
           <MenuIcon fontSize="medium" />
         </button>
-        <img src={logo} alt="Youtube logo" className='h-1/2' />
+        <button 
+        onClick={()=>{
+          navigate('/')
+        }}
+        className='w-full h-full'
+        >
+          <img src={logo} alt="Youtube logo" className='h-1/2' />
+        </button>
       </div>
       <div className='w-2/5'>
         <div className='w-full flex items-center border-[#3d3d3d] border-2 rounded-full'>
@@ -92,10 +100,10 @@ function Navbar() {
               ✖
             </button>
           </div>
-          <h3 className='p-2'>Are you sure you want to log out?</h3>
-          <div className='flex gap-2'>
-            <button onClick={handleLogout} className='px-5 p-2 rounded-md bg-slate-500'>Yes</button>
-            <button onClick={handleCancel} className='px-5 p-2 rounded-md bg-slate-500'>No</button>
+          <h3 className='pb-3 text-white'>Are you sure you want to log out?</h3>
+          <div className='flex gap-5'>
+            <button onClick={handleLogout} className='px-6 p-1 rounded-md bg-slate-500'>Yes</button>
+            <button onClick={handleCancel} className='px-6 p-1 rounded-md bg-slate-500'>No</button>
           </div>
         </div>
       </Modal>
