@@ -114,7 +114,7 @@ const getVideoById = asyncHandler(async (req, res) => {
 
     // Add videoId to user's Watchhistory
     user.watchHistory = user.watchHistory.filter(video=> !video.equals(videoId))
-    user.watchHistory.push(videoId)
+    user.watchHistory.unshift(videoId)
 
     await user.save();
 

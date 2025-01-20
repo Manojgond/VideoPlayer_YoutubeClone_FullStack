@@ -375,7 +375,7 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
                 },
                 isSubscribed: {
                     $cond: {
-                        if: {$in: [req.user?._id, "$subscribers.subscriber"]},
+                        if: { $in: [req.user?._id, "$subscribers.subscriber"] },
                         then: true,
                         else: false
                     }
@@ -413,37 +413,43 @@ const getWatchHistory = asyncHandler(async (req, res) => {
             }
         },
         {
+            $unwind: "$watchHistory"
+        },
+        {
             $lookup: {
                 from: "videos",
                 localField: "watchHistory",
                 foreignField: "_id",
-                as: "watchHistory",
+                as: "videoDetails"
+            }
+        },
+        {
+            $unwind: "$videoDetails"
+        },
+        {
+            $lookup: {
+                from: "users",
+                localField: "videoDetails.owner",
+                foreignField: "_id",
+                as: "ownerDetails",
                 pipeline: [
                     {
-                        $lookup: {
-                            from: "users",
-                            localField: "owner",
-                            foreignField: "_id",
-                            as: "owner",
-                            pipeline: [
-                                {
-                                    $project: {
-                                        fullName: 1,
-                                        username: 1,
-                                        avatar: 1
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        $addFields: {
-                            owner: {
-                                $first: "$owner"
-                            }
+                        $project: {
+                            fullName: 1,
+                            username: 1,
+                            avatar: 1
                         }
                     }
                 ]
+            }
+        },
+        {
+            $unwind: "$ownerDetails"  
+        },
+        {
+            $group: {
+                _id: "$_id",
+                watchHistory: { $push: "$videoDetails" }
             }
         }
     ])
