@@ -5,7 +5,7 @@ import { store } from './app/store.js'
 import { Provider } from 'react-redux'
 import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from 'react-router-dom'
 import PageLayout from './Components/PageLayout.jsx'
-import { Homepage, VideoPlayerPage, HistoryPage, PublishVideo, LoginPage, RegisterPage, PrivateRoute } from './Components/index'
+import { Homepage, VideoPlayerPage, HistoryPage, PublishVideo, LoginPage, RegisterPage, PrivateRoute, SubscriptionPage, YourVideosPage } from './Components/index'
 
 const router = createBrowserRouter(
     createRoutesFromElements(
@@ -20,17 +20,27 @@ const router = createBrowserRouter(
                 <PrivateRoute>
                     <VideoPlayerPage key={window.location.pathname} />
                 </PrivateRoute>
-                } />
+            } />
             <Route path='History' element={
                 <PrivateRoute>
                     <HistoryPage />
                 </PrivateRoute>
-                } />
+            } />
             <Route path='Publish' element={
                 <PrivateRoute>
                     <PublishVideo />
                 </PrivateRoute>
-                } />
+            } />
+            <Route path='Subscription' element={
+                <PrivateRoute>
+                    <SubscriptionPage />
+                </PrivateRoute>
+            } />
+            <Route path='Your-videos' element={
+                <PrivateRoute>
+                    <YourVideosPage />
+                </PrivateRoute>
+            } />
 
             {/* Public routes */}
             <Route path='register' element={<RegisterPage />} />

@@ -15,7 +15,7 @@ export const SidebarItems = [
     {
         title: "Subscriptions",
         icon: <SubscriptionsOutlinedIcon />,
-        link: "/subscription"
+        link: "/Subscription"
     },
     {
         title: "History",
@@ -30,7 +30,7 @@ export const SidebarItems = [
     {
         title: "Your videos",
         icon: <SmartDisplayOutlinedIcon />,
-        link: "/YourVideos"
+        link: "/Your-videos"
     },
     {
         title: "Liked videos",

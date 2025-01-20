@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react'
-import VideoCardLessDetails from './VideoCardLessDetails'
+import { useState, useEffect } from "react";
+import { useSelector } from 'react-redux'
+import VideosHome from "./VideosHome";
+import VideoCardHome from './VideoCardHome'
 import { useNavigate } from 'react-router-dom'
 
-
-function PlaynextVideos({ currentVideo }) {
+function SubscriptionPage() {
+    const isOpen = useSelector((state) => state.menuhide.isMenuOpen)
     const [videos, setVideos] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -56,6 +58,8 @@ function PlaynextVideos({ currentVideo }) {
         }
     }
 
+
+
     if (loading) {
         return <div>Loading...</div>;
     }
@@ -65,25 +69,23 @@ function PlaynextVideos({ currentVideo }) {
     }
 
     return (
-        <div className="w-full h-full">
+
+        <div className="p-2">
             {videos.length === 0 ? (
                 <p>No videos available</p> // Show a message if there are no videos
             ) : (
-                <ul>
+                <ul className="grid grid-cols-4 gap-4">
                     {videos.map((video, index) => {
-                        if (video._id === currentVideo) return null;
                         return (
-                            <li key={index}
-                                className='py-2 mt-2'
-                            >
+                            <li key={index}>
                                 <button
                                     onClick={() => {
                                         navigate(`/VideoPlayer/${video._id}`)
-                                    }}
-                                    className='w-full h-full'>
-                                    <VideoCardLessDetails
+                                    }}>
+                                    <VideoCardHome
                                         thumbnail={video.thumbnail}
                                         duration={formatDurationToHMS(video.duration)}
+                                        profilePic={video.owner.avatar}
                                         title={video.title}
                                         channelName={video.owner.username}
                                         views={video.views}
@@ -98,4 +100,4 @@ function PlaynextVideos({ currentVideo }) {
     )
 }
 
-export default PlaynextVideos
+export default SubscriptionPage
