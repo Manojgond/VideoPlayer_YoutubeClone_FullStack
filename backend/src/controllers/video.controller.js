@@ -13,30 +13,19 @@ const getAllVideos = asyncHandler(async (req, res) => {
     if (!user) {
         throw new ApiError(400, "User does not exist")
     }
-    const userId = user._id;
 
     try {
-        const pageNum = parseInt(page, 10);
-        const limitNum = parseInt(limit, 10);
-        const options = {
-            skip: (pageNum - 1) * limitNum,
-            limit: limitNum,
-        };
         const sortOrder = sortType === 'asc' ? 1 : -1;
 
         const videos = await Video.find({ ...query })
             .sort({ [sortBy]: sortOrder })
-            .skip(options.skip)
-            .limit(options.limit)
             .populate('owner');
 
         const totalCount = await Video.countDocuments({ ...query });
 
         const userVideos = {
             videos,
-            totalCount,
-            totalPages: Math.ceil(totalCount / limitNum),
-            currentPage: pageNum,
+            totalCount
         };
 
         return res
@@ -45,6 +34,36 @@ const getAllVideos = asyncHandler(async (req, res) => {
                 new ApiResponse(200, userVideos, "All videos fetched successfully")
             )
 
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+})
+
+const getCurrentUserVideos = asyncHandler(async (req, res) => {
+    const { query, sortBy, sortType } = req.query
+    const user = req.user
+    if (!user) {
+        throw new ApiError(400, "User does not exist")
+    }
+    const userId = user._id;
+
+    try {
+        const sortOrder = sortType === 'asc' ? 1 : -1;
+        const videos = await Video.find({ owner: userId, ...query })
+            .sort({ [sortBy]: sortOrder })
+            .populate('owner');
+
+        const totalCount = await Video.countDocuments({ owner: userId, ...query });
+        const userVideos = {
+            videos,
+            totalCount
+        };
+        return res
+            .status(200)
+            .json(
+                new ApiResponse(200, userVideos, "User's all videos fetched successfully")
+            )
     } catch (error) {
         console.error(error);
         throw error;
@@ -113,7 +132,7 @@ const getVideoById = asyncHandler(async (req, res) => {
     )
 
     // Add videoId to user's Watchhistory
-    user.watchHistory = user.watchHistory.filter(video=> !video.equals(videoId))
+    user.watchHistory = user.watchHistory.filter(video => !video.equals(videoId))
     user.watchHistory.unshift(videoId)
 
     await user.save();
@@ -182,7 +201,7 @@ const getVideoById = asyncHandler(async (req, res) => {
             }
         },
         {
-            $addFields:{
+            $addFields: {
                 owner: {
                     $first: "$owner"
                 }
@@ -289,6 +308,7 @@ const togglePublishStatus = asyncHandler(async (req, res) => {
 
 export {
     getAllVideos,
+    getCurrentUserVideos,
     publishAVideo,
     getVideoById,
     updateVideo,

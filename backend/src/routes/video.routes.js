@@ -2,6 +2,7 @@ import { Router } from 'express';
 import {
     deleteVideo,
     getAllVideos,
+    getCurrentUserVideos,
     getVideoById,
     publishAVideo,
     togglePublishStatus,
@@ -9,13 +10,14 @@ import {
 } from "../controllers/video.controller.js"
 import {verifyJWT} from "../middlewares/auth.middleware.js"
 import {upload} from "../middlewares/multer.middleware.js"
+import {sanitizeQueryMiddleware} from "../middlewares/query.middleware.js"
 
 const router = Router();
 router.use(verifyJWT); // Apply verifyJWT middleware to all routes in this file
 
 router
     .route("/")
-    .get(getAllVideos)
+    .get(sanitizeQueryMiddleware, getAllVideos)
     .post(
         upload.fields([
             {
@@ -38,5 +40,7 @@ router
     .patch(upload.single("thumbnail"), updateVideo);
 
 router.route("/toggle/publish/:videoId").patch(togglePublishStatus);
+
+router.route("/user/videos").get(sanitizeQueryMiddleware, getCurrentUserVideos);
 
 export default router

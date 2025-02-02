@@ -8,6 +8,8 @@ import RegisterPage from './RegisterPage'
 import PrivateRoute from './PrivateRoute'
 import SubscriptionPage from './SubscriptionPage'
 import YourVideosPage from './YourVideosPage'
+import Modal from './Modal'
+
 
 export {
     Homepage,
@@ -19,4 +21,5 @@ export {
     PrivateRoute,
     SubscriptionPage,
     YourVideosPage,
+    Modal,
 }

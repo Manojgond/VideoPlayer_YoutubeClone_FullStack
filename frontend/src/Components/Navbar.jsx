@@ -61,11 +61,11 @@ function Navbar() {
         <button className={`p-3 ${menuIconToHide ? "hidden" : "block"}`} onClick={() => dispatch(toggleMenuHide())}>
           <MenuIcon fontSize="medium" />
         </button>
-        <button 
-        onClick={()=>{
-          navigate('/')
-        }}
-        className='w-full h-full'
+        <button
+          onClick={() => {
+            navigate('/')
+          }}
+          className='w-full h-full'
         >
           <img src={logo} alt="Youtube logo" className='h-1/2' />
         </button>
