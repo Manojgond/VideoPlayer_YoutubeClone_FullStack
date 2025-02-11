@@ -9,11 +9,14 @@ function YourVideosPage({ currentVideo }) {
     const [videos, setVideos] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [isDelConfModalOpen, setIsDelConfModalOpen] = useState(false);
     const [editTitle, setEditTitle] = useState('')
     const [editDesc, setEditDesc] = useState('')
     const [editThumbnail, setEditThumbnail] = useState(null)
     const [editVideoId, setEditVideoId] = useState('')
+    const [videoIdToDelete, setVideoIdToDelete] = useState('')
+    const [dataFetchToggle, setDataFetchToggle] = useState(false)
 
     const navigate = useNavigate()
 
@@ -26,12 +29,10 @@ function YourVideosPage({ currentVideo }) {
                     credentials: 'include',
                 });
 
-                // Check if the response is OK (status code 200-299)
                 if (!response.ok) {
                     throw new Error('Failed to fetch videos');
                 }
 
-                // Parse the response data
                 const data = await response.json();
 
                 setVideos(data?.data?.videos);
@@ -43,7 +44,7 @@ function YourVideosPage({ currentVideo }) {
         };
 
         getVideos();
-    }, [])
+    }, [dataFetchToggle])
 
     function formatDurationToHMS(duration) {
         const hours = Math.floor(duration / 3600);
@@ -83,7 +84,8 @@ function YourVideosPage({ currentVideo }) {
         })
 
         if (response.status == 200) {
-            setIsModalOpen(false)
+            setIsEditModalOpen(false)
+            setDataFetchToggle(!dataFetchToggle)
         }
 
     }
@@ -94,8 +96,19 @@ function YourVideosPage({ currentVideo }) {
             credentials: 'include'
         })
 
-        if(response.status == 200){
-            console.log('Video publish toggel done successfully')
+        if (response.status == 200) {
+            setDataFetchToggle(!dataFetchToggle)
+        }
+    }
+
+    const handleVideoDelete = async () => {
+        const response = await fetch(`http://localhost:8000/api/v1/videos/${videoIdToDelete}`, {
+            method: 'DELETE',
+            credentials: 'include'
+        })
+
+        if (response.status == 200) {
+            setDataFetchToggle(!dataFetchToggle)
         }
     }
 
@@ -143,7 +156,7 @@ function YourVideosPage({ currentVideo }) {
                                     <button
                                         className='p-4 rounded-lg hover:bg-[#212121]'
                                         onClick={() => {
-                                            setIsModalOpen(true)
+                                            setIsEditModalOpen(true)
                                             setEditTitle(video.title)
                                             setEditDesc(video.description)
                                             setEditVideoId(video._id)
@@ -151,7 +164,13 @@ function YourVideosPage({ currentVideo }) {
                                     >
                                         <EditOutlinedIcon fontSize="large" />
                                     </button>
-                                    <button className='p-4 rounded-lg hover:bg-[#212121]'>
+                                    <button
+                                        className='p-4 rounded-lg hover:bg-[#212121]'
+                                        onClick={() => {
+                                            setIsDelConfModalOpen(true)
+                                            setVideoIdToDelete(video._id)
+                                        }}
+                                    >
                                         <DeleteOutlineOutlinedIcon fontSize="large" />
                                     </button>
                                     <div className='flex items-center p-4 rounded-lg hover:bg-[#212121]'>
@@ -172,8 +191,8 @@ function YourVideosPage({ currentVideo }) {
             </div>
             <div>
                 <Modal
-                    isOpen={isModalOpen}
-                    onClose={() => setIsModalOpen(false)}
+                    isOpen={isEditModalOpen}
+                    onClose={() => setIsEditModalOpen(false)}
                     children={
                         <div className='bg-[#282828] w-1/2 h-3/4 rounded-lg border-white border-2 p-5 flex flex-col'>
                             <h2 className='text-2xl'>EDIT YOUR VIDEO DETAILS</h2>
@@ -205,6 +224,20 @@ function YourVideosPage({ currentVideo }) {
                                 />
                                 <button type="submit" className='bg-white text-black p-3 my-3'>Update</button>
                             </form>
+                        </div>
+                    } />
+            </div>
+            <div>
+                <Modal
+                    isOpen={isDelConfModalOpen}
+                    onClose={() => setIsDelConfModalOpen(false)}
+                    children={
+                        <div className='bg-[#282828] rounded-lg border-white border-2 p-6 flex flex-col items-center'>
+                            <h3 className='text-xl'>Are you sure you want to delete this video permanently ?</h3>
+                            <div className='flex gap-10 pt-5'>
+                                <button onClick={handleVideoDelete} className='px-6 p-1 rounded-md bg-slate-500'>Yes</button>
+                                <button onClick={() => setIsDelConfModalOpen(false)} className='px-6 p-1 rounded-md bg-slate-500'>No</button>
+                            </div>
                         </div>
                     } />
             </div>
