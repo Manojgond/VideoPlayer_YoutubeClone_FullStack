@@ -3,6 +3,7 @@ import VideoCardLessDetails from './VideoCardLessDetails'
 import { useNavigate } from 'react-router-dom'
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
+import SlideshowOutlinedIcon from '@mui/icons-material/SlideshowOutlined';
 import { Modal } from './index';
 
 function YourVideosPage({ currentVideo }) {
@@ -124,6 +125,15 @@ function YourVideosPage({ currentVideo }) {
     return (
         <div className="w-full h-full pl-16">
             <p className='text-4xl font-bold pb-8'>Watch history</p>
+            <div className='flex justify-end pr-5'>
+                <button 
+                className='flex gap-2 border-2 px-4 py-2 rounded-full'
+                onClick={()=> navigate('/publish')}
+                >
+                    <SlideshowOutlinedIcon />
+                    <h1>Upload</h1>
+                </button>
+            </div>
             <div className='w-1/2 flex justify-end gap-1'>
                 <p className='p-2 text-xl font-bold'>Edit</p>
                 <p className='p-2 text-xl font-bold'>Delete</p>
