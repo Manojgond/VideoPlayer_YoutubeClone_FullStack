@@ -17,11 +17,11 @@ const getAllVideos = asyncHandler(async (req, res) => {
     try {
         const sortOrder = sortType === 'asc' ? 1 : -1;
 
-        const videos = await Video.find({ ...query })
+        const videos = await Video.find({ isPublished: true, ...query })
             .sort({ [sortBy]: sortOrder })
             .populate('owner');
 
-        const totalCount = await Video.countDocuments({ ...query });
+        const totalCount = await Video.countDocuments({ isPublished: true, ...query });
 
         const userVideos = {
             videos,
@@ -221,15 +221,16 @@ const updateVideo = asyncHandler(async (req, res) => {
     const { title, description } = req.body
 
     const thumbnailLocalPath = req.file?.path;
+    let thumbnailUrl;
 
-    if (!thumbnailLocalPath) {
-        throw new ApiError(400, "thumbnail file is missing")
-    }
+    if(thumbnailLocalPath){
+        const thumbnail = await uploadOnCloudinary(thumbnailLocalPath)
 
-    const thumbnail = await uploadOnCloudinary(thumbnailLocalPath)
+        if (!thumbnail?.url) {
+            throw new ApiError(400, "Something went wrong when uploading file on cloudinary")
+        }
 
-    if (!thumbnail?.url) {
-        throw new ApiError(400, "Something went wrong when uploading file on cloudinary")
+        thumbnailUrl = thumbnail?.url;
     }
 
     if (!videoId) {
@@ -240,14 +241,15 @@ const updateVideo = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Title and description required")
     }
 
+    const updateFields = { title, description };
+    if(thumbnailUrl){
+        updateFields.thumbnail = thumbnailUrl;
+    }
+
     const video = await Video.findByIdAndUpdate(
         videoId,
         {
-            $set: {
-                title,
-                description,
-                thumbnail: thumbnail.url
-            }
+            $set: updateFields
         },
         {
             new: true
