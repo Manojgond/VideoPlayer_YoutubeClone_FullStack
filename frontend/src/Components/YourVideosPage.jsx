@@ -134,12 +134,13 @@ function YourVideosPage({ currentVideo }) {
                     <h1>Upload</h1>
                 </button>
             </div>
-            <div className='w-1/2 flex justify-end gap-1'>
+            <div className='w-1/2 grid grid-cols-[6fr_1fr_1fr_1fr] gap-1 text-center'>
+                <div></div> {/* Empty div given to align grid */}
                 <p className='p-2 text-xl font-bold'>Edit</p>
                 <p className='p-2 text-xl font-bold'>Delete</p>
                 <p className='p-2 text-xl font-bold'>Publish</p>
             </div>
-            <div className='w-1/2 grid gap-3'>
+            <div className='w-1/2'>
                 {videos.length === 0 ? (
                     <p>No videos available</p> // Show a message if there are no videos
                 ) : (
@@ -148,7 +149,7 @@ function YourVideosPage({ currentVideo }) {
                             if (video._id === currentVideo) return null;
                             return (
                                 <li key={index}
-                                    className='py-2 mt-2 flex justify-center'
+                                    className='py-2 mt-2 grid grid-cols-[6fr_1fr_1fr_1fr] gap-1'
                                 >
                                     <button
                                         onClick={() => {
@@ -217,6 +218,7 @@ function YourVideosPage({ currentVideo }) {
                                     value={editTitle}
                                     onChange={(e) => setEditTitle(e.target.value)}
                                     className='outline-none text-black p-3'
+                                    required
                                 />
                                 <label htmlFor="description" className='py-3'>Description:</label>
                                 <input
@@ -225,6 +227,7 @@ function YourVideosPage({ currentVideo }) {
                                     value={editDesc}
                                     onChange={(e) => setEditDesc(e.target.value)}
                                     className='outline-none text-black p-3'
+                                    required
                                 />
                                 <label htmlFor="thumbnail" className='py-3'>Thumbnail:</label>
                                 <input
