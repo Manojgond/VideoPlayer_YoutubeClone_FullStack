@@ -124,7 +124,7 @@ function YourVideosPage({ currentVideo }) {
 
     return (
         <div className="w-full h-full pl-16">
-            <p className='text-4xl font-bold pb-8'>Watch history</p>
+            <p className='text-4xl font-bold pb-8'>Your Videos</p>
             <div className='flex justify-end pr-5'>
                 <button 
                 className='flex gap-2 border-2 px-4 py-2 rounded-full'
@@ -134,13 +134,13 @@ function YourVideosPage({ currentVideo }) {
                     <h1>Upload</h1>
                 </button>
             </div>
-            <div className='w-1/2 grid grid-cols-[6fr_1fr_1fr_1fr] gap-1 text-center'>
+            <div className='w-2/3 grid grid-cols-[6fr_1fr_1fr_1fr] gap-1 text-center'>
                 <div></div> {/* Empty div given to align grid */}
                 <p className='p-2 text-xl font-bold'>Edit</p>
                 <p className='p-2 text-xl font-bold'>Delete</p>
                 <p className='p-2 text-xl font-bold'>Publish</p>
             </div>
-            <div className='w-1/2'>
+            <div className='w-2/3'>
                 {videos.length === 0 ? (
                     <p>No videos available</p> // Show a message if there are no videos
                 ) : (

@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux'
 import VideosHome from "./VideosHome";
 import VideoCardHome from './VideoCardHome'
 import { useNavigate } from 'react-router-dom'
+import ErrorMsgPopUp from "./ErrorMsgPopUp";
 
 function Homepage() {
   const isOpen = useSelector((state) => state.menuhide.isMenuOpen)
@@ -58,19 +59,14 @@ function Homepage() {
     }
   }
 
-
-
   if (loading) {
     return <div>Loading...</div>;
   }
 
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
 
   return (
-
     <div className="p-2">
+      <ErrorMsgPopUp message={error} />
       {videos.length === 0 ? (
         <p>No videos available</p> // Show a message if there are no videos
       ) : (
@@ -78,10 +74,10 @@ function Homepage() {
           {videos.map((video, index) => {
             return (
               <li key={index}>
-                <button 
-                onClick={() => {
-                  navigate(`/VideoPlayer/${video._id}`)
-                }}>
+                <div
+                  onClick={() => {
+                    navigate(`/VideoPlayer/${video._id}`)
+                  }}>
                   <VideoCardHome
                     thumbnail={video.thumbnail}
                     duration={formatDurationToHMS(video.duration)}
@@ -90,7 +86,7 @@ function Homepage() {
                     channelName={video.owner.username}
                     views={video.views}
                   />
-                </button>
+                </div>
               </li>
             )
           })}

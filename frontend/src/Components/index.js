@@ -9,6 +9,7 @@ import PrivateRoute from './PrivateRoute'
 import SubscriptionPage from './SubscriptionPage'
 import YourVideosPage from './YourVideosPage'
 import Modal from './Modal'
+import ErrorMsgPopUp from './ErrorMsgPopUp'
 
 
 export {
@@ -22,4 +23,5 @@ export {
     SubscriptionPage,
     YourVideosPage,
     Modal,
+    ErrorMsgPopUp
 }
