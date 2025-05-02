@@ -21,15 +21,12 @@ function Homepage() {
           credentials: 'include',
         });
 
-        // Check if the response is OK (status code 200-299)
         if (!response.ok) {
           throw new Error('Failed to fetch videos');
         }
 
-        // Parse the response data
         const data = await response.json();
 
-        // Update the state with the fetched videos
         setVideos(data?.data?.videos);
       } catch (err) {
         setError(err.message);

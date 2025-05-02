@@ -1,12 +1,15 @@
 import React, { useState } from 'react'
-import Image from '../assets/Background.jpg'
-import loginImage from '../assets/Login_image_nobg.png'
-import { useNavigate } from 'react-router-dom'
+import youtubeImg from '../assets/Youtube_Img.jpg'
+import { useNavigate, Link } from 'react-router-dom'
+import ErrorMsgPopUp from './ErrorMsgPopUp'
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 
 function LoginPage() {
     const [email, setEmail] = useState('');
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [passwordType, setPasswordType] = useState('password');
 
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
@@ -38,19 +41,16 @@ function LoginPage() {
                 credentials: 'include',
             });
 
-            // Handle successful response
-            if (response.status === 200) {
+            const data = await response.json();
+
+            if (!response.ok) {
+                setError(data.message)
+            } else {
                 setSuccess('User logged in successfully!');
                 navigate('/')
-            } else if (response.status === 401) {
-                setError('Invalid user credentials')
-            } else if (response.status === 404) {
-                setError('User with entered username or email not found')
             }
 
         } catch (err) {
-            console.log(err)
-            // Handle error response
             if (err.response) {
                 setError(err.response.data.message || 'An error occurred');
             } else {
@@ -59,55 +59,72 @@ function LoginPage() {
         }
     };
 
+    const handleShowPassClick = (e) => {
+        e.preventDefault();
+
+        if (passwordType === 'password') {
+            setPasswordType('text')
+        } else setPasswordType('password');
+    }
+
     return (
-        <div className="bg-[url('/Background.jpg')] bg-cover bg-center w-full h-full flex items-center justify-center flex-col">
-            {error && <div className='text-red-600 font-bold text-center mb-5 text-2xl'>{error}</div>}
+        <div className="bg-[url('./SpaceBG.png')] bg-cover bg-center w-full h-full flex items-center justify-center flex-col">
             {success && <div className='text-green-600 font-bold text-center mb-5 text-2xl'>{success}</div>}
-            <div className='bg-[#FF0000] w-1/2 h-3/4 rounded-[15%] grid grid-cols-2'>
-                <div className='flex items-center justify-center'>
-                    <img src={loginImage} alt="" />
+            <ErrorMsgPopUp message={error} />
+            <div className='w-3/4 h-3/4 grid grid-cols-2 border-white border-2 rounded-lg'>
+                <div className='flex items-center justify-center w-full'>
+                    <div className='w-4/5 rounded-lg overflow-hidden flex items-center justify-center border-white border-2'>
+                        <img src={youtubeImg} alt="" className='w-full' />
+                    </div>
                 </div>
-                <div className='flex flex-col justify-center '>
-                    <form onSubmit={handleSubmit} className='w-full'>
-                        <div>
-                            <label htmlFor="email">Email</label>
-                            <input
-                                type="email"
-                                id="email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                placeholder="Enter your email"
-                                className='p-2 w-3/4 bg-transparent outline-none'
-                            />
-                        </div>
+                <div className='flex flex-col justify-around py-10'>
+                    <h1 className='text-3xl'>Welcome Back</h1>
+                    <form onSubmit={handleSubmit} className='w-full flex flex-col'>
+                        <label htmlFor="email" className='py-2'>Email</label>
+                        <input
+                            type="email"
+                            id="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            placeholder="Enter your email"
+                            className='p-2 w-3/4 bg-transparent outline-none border-gray-500 border-2 rounded-md focus:border-gray-400'
+                        />
 
-                        <div>
-                            <label htmlFor="username">Username</label>
-                            <input
-                                type="text"
-                                id="username"
-                                value={username}
-                                onChange={(e) => setUsername(e.target.value)}
-                                placeholder="Choose a username"
-                                className='p-2 w-3/4 bg-transparent outline-none'
-                            />
-                        </div>
+                        <label htmlFor="username" className='py-2'>Username</label>
+                        <input
+                            type="text"
+                            id="username"
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                            placeholder="Choose a username"
+                            className='p-2 w-3/4 bg-transparent outline-none border-gray-500 border-2 rounded-md focus:border-gray-400'
+                        />
 
-                        <div>
-                            <label htmlFor="password">Password</label>
+                        <label htmlFor="password" className='py-2'>Password</label>
+                        <div className='w-3/4 flex border-gray-500 border-2 rounded-md focus:border-gray-400 justify-center'>
                             <input
-                                type="password"
+                                type={passwordType}
                                 id="password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 placeholder="Enter your password"
-                                className='p-2 w-3/4 bg-transparent outline-none'
+                                className='p-2 w-full bg-transparent outline-none'
                             />
+                            <button className='px-3'
+                                onClick={handleShowPassClick}>
+                                {passwordType === 'password'
+                                    ? <VisibilityIcon />
+                                    : <VisibilityOffIcon />}
+                            </button>
                         </div>
-                        <div className='my-2'>
-                            <button type="submit" className='bg-white text-black w-3/4 p-2'>Login</button>
+                        <div className='my-5'>
+                            <button type="submit" className='bg-white text-black w-3/4 p-2 hover:font-bold transition-all duration-300'>Login</button>
                         </div>
                     </form>
+                    <div>
+                        <span>Don't have an account ?</span>
+                        <Link to="/register" className='px-3 text-blue-700 underline hover:font-semibold'>Register</Link>
+                    </div>
                 </div>
             </div>
         </div>
