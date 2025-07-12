@@ -19,6 +19,7 @@ const menuListItems = [
         icon: <ReplyOutlinedIcon />,
         title: "Share"
     }];
+
 function VideoCardHome(
     {
         thumbnail,

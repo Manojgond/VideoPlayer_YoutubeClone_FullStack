@@ -134,11 +134,51 @@ const getLikedVideos = asyncHandler(async (req, res) => {
         throw new ApiError(400, "User not found, can't like/unlike")
     }
 
-    const likedVideos = await Like.find(
+    const likedVideos = await Like.aggregate([
         {
-            likedBy: user._id
+            $match: {
+                likedBy: user?._id,
+                video: {
+                    $exists: true
+                },
+                comment: {
+                    $exists: false
+                }
+            }
+        },
+        {
+            $lookup: {
+                from: "videos",
+                localField: "video",
+                foreignField: "_id",
+                as: "videos",
+                pipeline: [
+                    {
+                        $lookup: {
+                            from: "users",
+                            localField: "owner",
+                            foreignField: "_id",
+                            as: "owner"
+                        }
+                    },
+                    {
+                        $addFields: {
+                            owner: {
+                                $first: "$owner"
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            $addFields: {
+                videos: {
+                    $first: "$videos"
+                }
+            }
         }
-    )
+    ])
 
     return res
         .status(200)

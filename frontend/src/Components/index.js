@@ -10,6 +10,8 @@ import SubscriptionPage from './SubscriptionPage'
 import YourVideosPage from './YourVideosPage'
 import Modal from './Modal'
 import ErrorMsgPopUp from './ErrorMsgPopUp'
+import LikedVideosPage from './LikedVideosPage'
+
 
 
 export {
@@ -23,5 +25,6 @@ export {
     SubscriptionPage,
     YourVideosPage,
     Modal,
-    ErrorMsgPopUp
+    ErrorMsgPopUp,
+    LikedVideosPage
 }

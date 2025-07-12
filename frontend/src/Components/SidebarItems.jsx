@@ -35,6 +35,6 @@ export const SidebarItems = [
     {
         title: "Liked videos",
         icon: <ThumbUpOutlinedIcon />,
-        link: "/Liked"
+        link: "/Liked-videos"
     },
 ]
