@@ -110,12 +110,12 @@ function LoginPage() {
                                 placeholder="Enter your password"
                                 className='p-2 w-full bg-transparent outline-none'
                             />
-                            <button className='px-3'
+                            <span className='px-3'
                                 onClick={handleShowPassClick}>
                                 {passwordType === 'password'
                                     ? <VisibilityIcon />
                                     : <VisibilityOffIcon />}
-                            </button>
+                            </span>
                         </div>
                         <div className='my-5'>
                             <button type="submit" className='bg-white text-black w-3/4 p-2 hover:font-bold transition-all duration-300'>Login</button>

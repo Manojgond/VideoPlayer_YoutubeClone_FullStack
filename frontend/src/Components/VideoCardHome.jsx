@@ -5,6 +5,7 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import WatchLaterOutlinedIcon from '@mui/icons-material/WatchLaterOutlined';
 import BookmarkBorderOutlinedIcon from '@mui/icons-material/BookmarkBorderOutlined';
 import ReplyOutlinedIcon from '@mui/icons-material/ReplyOutlined';
+import LazyImage from './LazyImage';
 
 const menuListItems = [
     {
@@ -46,11 +47,15 @@ function VideoCardHome(
     }
 
     return (
-
         <div className='w-full relative'>
             {/* Thumbnail and duration */}
             <div className="rounded-md relative h-[23vh]">
-                <img src={thumbnail} alt="" className="w-full h-full rounded-lg object-cover" />
+                <LazyImage
+                    src={thumbnail}
+                    alt={title}
+                    className="w-full h-full rounded-lg object-cover"
+                    placeholder="/placeholder-thumbnail.jpg"
+                />
                 <p className="absolute bottom-2 right-2 bg-gray-900 bg-opacity-50 px-1 rounded-md">{duration}</p>
             </div>
             {/* Profile picture and Title */}
@@ -61,9 +66,9 @@ function VideoCardHome(
                 <div className='w-[80%] h-full p-3 leading-tight text-left'>
                     <p className='overflow-hidden line-clamp-2'>{title}</p>
                 </div>
-                <button onClick={handleMoreBtnClick}>
+                {/* <button onClick={handleMoreBtnClick}>
                     <MoreVertIcon />
-                </button>
+                </button> */}
             </div>
             {/* Channle name and views */}
             <div className='w-full h-[5vh] text-sm text-gray-400 flex'>
@@ -73,7 +78,7 @@ function VideoCardHome(
                     <p>{views} views</p>
                 </div>
             </div>
-            {isMoreMenuOpen && <ul
+            {/* {isMoreMenuOpen && <ul
                 className="absolute shadow-lg rounded-lg border z-50 bg-[#212121] w-60 overflow-hidden"
                 style={{ top: position.top, left: position.left }}
                 onClick={(e)=>{
@@ -88,7 +93,7 @@ function VideoCardHome(
                     <span>{listItem.icon}</span>
                     <span>{listItem.title}</span>
                 </li>))}
-            </ul>}
+            </ul>} */}
         </div>
     )
 }

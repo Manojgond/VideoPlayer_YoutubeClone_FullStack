@@ -136,12 +136,12 @@ function RegisterPage() {
                                 placeholder="Enter your password"
                                 className='p-2 w-full bg-transparent outline-none'
                             />
-                            <button className='px-3'
+                            <span className='px-3'
                                 onClick={handleShowPassClick}>
                                 {passwordType === 'password'
                                     ? <VisibilityIcon />
                                     : <VisibilityOffIcon />}
-                            </button>
+                            </span>
                         </div>
 
                         <div className='py-2'>
