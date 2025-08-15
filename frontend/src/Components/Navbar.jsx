@@ -4,7 +4,7 @@ import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useDispatch } from 'react-redux'
 import { toggleMenuHide } from "../features/youtube/youtubeSlice";
-import logo from "../assets/Youtube_logo_NoBG.png"
+// import logo from "../assets/Youtube_logo_NoBG.png"
 import { useLocation } from 'react-router-dom';
 import Modal from 'react-modal'
 import { useNavigate } from 'react-router-dom'
@@ -67,7 +67,7 @@ function Navbar() {
           }}
           className='w-full h-full'
         >
-          <img src={logo} alt="Youtube logo" className='h-1/2' />
+          {/* <img src={logo} alt="Youtube logo" className='h-1/2' /> */}
         </button>
       </div>
       <div className='w-2/5'>

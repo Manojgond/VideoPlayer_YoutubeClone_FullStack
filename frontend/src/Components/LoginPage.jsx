@@ -68,7 +68,8 @@ function LoginPage() {
     }
 
     return (
-        <div className="bg-[url('./SpaceBG.png')] bg-cover bg-center w-full h-full flex items-center justify-center flex-col">
+        <div className="w-full h-full flex items-center justify-center flex-col">
+            {/* bg-[url('./SpaceBG.png')] bg-cover bg-center  */}
             {success && <div className='text-green-600 font-bold text-center mb-5 text-2xl'>{success}</div>}
             <ErrorMsgPopUp message={error} />
             <div className='w-3/4 h-3/4 grid grid-cols-2 border-white border-2 rounded-lg'>
