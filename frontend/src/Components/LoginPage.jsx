@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import youtubeImg from '../assets/Youtube_Img.jpg'
+// import youtubeImg from 'https://pngdownload.io/wp-content/uploads/2023/12/YouTube-Logo-PNG-Symbol-for-Video-Platform-Transparent-jpg.webp'
 import { useNavigate, Link } from 'react-router-dom'
 import ErrorMsgPopUp from './ErrorMsgPopUp'
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -74,7 +74,7 @@ function LoginPage() {
             <div className='w-3/4 h-3/4 grid grid-cols-2 border-white border-2 rounded-lg'>
                 <div className='flex items-center justify-center w-full'>
                     <div className='w-4/5 rounded-lg overflow-hidden flex items-center justify-center border-white border-2'>
-                        <img src={youtubeImg} alt="" className='w-full' />
+                        {/* <img src={youtubeImg} alt="Logo" className='w-full' /> */}
                     </div>
                 </div>
                 <div className='flex flex-col justify-around py-10'>
