@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import ErrorMsgPopUp from './ErrorMsgPopUp'
-import youtubeImg from '../assets/Youtube_Img.jpg'
+// import youtubeImg from '../assets/Youtube_Img.jpg'
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 
@@ -90,7 +90,7 @@ function RegisterPage() {
             <div className='w-3/4 h-4/5 grid grid-cols-2 border-white border-2 rounded-lg'>
                 <div className='flex items-center justify-center w-full'>
                     <div className='w-4/5 rounded-lg overflow-hidden flex items-center justify-center border-white border-2'>
-                        <img src={youtubeImg} alt="" className='w-full' />
+                        {/* <img src={youtubeImg} alt="" className='w-full' /> */}
                     </div>
                 </div>
                 <div className='flex flex-col justify-around py-10'>
