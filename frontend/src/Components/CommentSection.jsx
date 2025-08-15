@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import profilePic from "../assets/profilePic.jpg"
+// import profilePic from "../assets/profilePic.jpg"
 import ThumbUpOutlinedIcon from '@mui/icons-material/ThumbUpOutlined';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 
@@ -111,7 +111,7 @@ function CommentSection({ videoId }) {
             {/* Input to add comment */}
             <div className='w-full flex items-center'>
                 <div className='h-12 w-12 rounded-full overflow-hidden'>
-                    <img src={profilePic} alt="" className='object-cover' />
+                    {/* <img src={profilePic} alt="" className='object-cover' /> */}
                 </div>
                 <div className='px-3 w-full pb-4'>
                     <input

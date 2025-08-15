@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
-import thumbnail from "../assets/Thumbnail_2.jpg"
-import profilePic from "../assets/profilePic.jpg"
+// import thumbnail from "../assets/Thumbnail_2.jpg"
+// import profilePic from "../assets/profilePic.jpg"
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import WatchLaterOutlinedIcon from '@mui/icons-material/WatchLaterOutlined';
 import BookmarkBorderOutlinedIcon from '@mui/icons-material/BookmarkBorderOutlined';
@@ -54,7 +54,7 @@ function VideoCardHome(
                     src={thumbnail}
                     alt={title}
                     className="w-full h-full rounded-lg object-cover"
-                    placeholder="/placeholder-thumbnail.jpg"
+                    placeholder=""
                 />
                 <p className="absolute bottom-2 right-2 bg-gray-900 bg-opacity-50 px-1 rounded-md">{duration}</p>
             </div>
