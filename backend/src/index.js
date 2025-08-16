@@ -7,7 +7,7 @@ dotenv.config({
 })
 
 
-await connectDB()
+await connectDB();
 
 // Export Express app for Vercel
 export default app;
