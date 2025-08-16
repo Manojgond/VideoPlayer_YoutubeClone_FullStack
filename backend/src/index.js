@@ -7,13 +7,17 @@ dotenv.config({
 })
 
 
-connectDB()
-.then(()=>{
-    app.listen(process.env.PORT || 8000, ()=>{
-        console.log(`Server running successfully at PORT: ${process.env.PORT}`)
-    })
-})
-.catch((err)=>{
-    console.log("MongoDB connection failed !!", err);
+await connectDB()
 
-})
+// Export Express app for Vercel
+export default app;
+
+// .then(()=>{
+//     app.listen(process.env.PORT || 8000, ()=>{
+//         console.log(`Server running successfully at PORT: ${process.env.PORT}`)
+//     })
+// })
+// .catch((err)=>{
+//     console.log("MongoDB connection failed !!", err);
+
+// })
