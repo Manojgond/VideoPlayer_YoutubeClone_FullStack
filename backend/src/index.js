@@ -9,6 +9,10 @@ dotenv.config({
 
 await connectDB();
 
+app.get("/", (req, res) => {
+    res.send("Backend is working on Vercel");
+});
+
 // Export Express app for Vercel
 export default app;
 
