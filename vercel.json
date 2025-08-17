@@ -12,5 +12,5 @@
             "dest": "backend/src/index.js"
         }
     ],
-    "buildCommand": "npm install --prefix backend"
+    "buildCommand": "npm install"
 }
