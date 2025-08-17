@@ -6,6 +6,7 @@ dotenv.config({
     path: './env'
 })
 
+console.log('Print')
 await connectDB()
     .then(() => {
         app.listen(process.env.PORT || 8000, () => {
